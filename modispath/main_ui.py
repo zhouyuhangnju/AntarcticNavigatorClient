@@ -1908,7 +1908,7 @@ def writefile():
         window.operation_file.write('{:.2f}'.format(item[0])+'\t'+'{:.2f}'.format(item[1])+'\n')
     window.operation_file.close()
     root.destroy()
-    sys.exit(-1)
+    os.exit(0)
 
 if __name__ == '__main__':
     root = tk.Tk()
