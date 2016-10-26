@@ -1,2 +1,4 @@
-/modispath/data/
-*.pyc
+/modispath/
+! *.py
+/sendrequest
+! *.py
