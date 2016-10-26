@@ -136,7 +136,7 @@ class PointWindow(Frame):
 
     def __callback_send_require(self):
         print('send')
-        receive = 'fanying_yt@163.com'
+        receive = 'PolarReceiveReq@163.com'
         # content = 'test'
         # send_mail.send(receive, content)
         print('self.entry_leftlon.get()', self.entry_leftlon.get())
@@ -146,9 +146,17 @@ class PointWindow(Frame):
         self.s_lati = self.__check_input(self.entry_rightlat.get(), False)
         self.cur_long = self.__check_input(self.entry_curlon.get(), True)
         self.cur_lati = self.__check_input(self.entry_curlat.get(), False)
+        if (self.n_lati < self.s_lati):
+            tkMessageBox.showerror('Wrong', '北纬需要大于南纬')
         subject = ('[south]' +  str(self.w_long) +  ' ' +  str(self.e_long) +  ' ' +  str(self.n_lati) +
                    ' ' + str(self.s_lati) +  ' ' +  str(self.cur_long) +  ' ' +  str(self.cur_lati))
-        send_mail.send(receive, subject)
+        ifsucss = send_mail.send(receive, subject)
+        if(ifsucss):
+            tkMessageBox.showinfo( 'info','发送成功')
+            root.destroy()
+        else:
+            tkMessageBox.showerror('Wrong', '邮件发送失败，请检查网络')
+        # self.frame_range.protocol("WM_DELETE_WINDOW", self.__close_point_frame)
 
     def __check_input(self, string, is_lon):
         value = -1

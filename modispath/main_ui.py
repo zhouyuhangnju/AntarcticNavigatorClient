@@ -11,6 +11,9 @@ import threading
 import mtTkinter as tk
 import tkMessageBox
 import send_mail
+import get_email_zip
+import unzipfile
+import clearfile
 from time import sleep
 from datetime import datetime
 from collections import Counter     # to get mode of a list
@@ -126,7 +129,6 @@ class MainWindow(object):
         # canvas item tags
         self.tag_graticule = []
         self.tag_path = []
-        self.tag_keypoints = []
         self.tag_operation_point = []
         self.tag_temp_point = None
         self.tag_start_point = None
@@ -181,7 +183,6 @@ class MainWindow(object):
         b4 = tk.Button(frame_left_bottom, text='显示/隐藏经纬网', command=self.__callback_b4_showhide_graticule)
         b5 = tk.Button(frame_left_bottom, text='-', width=2, command=self.__callback_b5_zoomout)
         b6 = tk.Button(frame_left_bottom, text='+', width=2, command=self.__callback_b6_zoomin)
-        # b_k = tk.Button(frame_left_bottom, text='显示/隐藏作业点', command=self.__callback_bk_showhide_keypoint)
         b0.grid(row=0, column=0)
         b1.grid(row=0, column=1)
         b2.grid(row=0, column=2)
@@ -308,27 +309,30 @@ class MainWindow(object):
 
         self.__rescale(self.default_zoom_factor)
 
-        self.operation_file = open('data/operationpoints.txt')
-        line = self.operation_file.readline()
-        while line:
-            print line
-            item = line.strip('\n').split('\t')
-            lon = float(item[0])
-            lat = float(item[1])
-            self.recent_op_points.append((lon, lat))
-
-            try:
-                i, j = self.__find_geocoordinates(lon, lat)
-            except RuntimeError:
-                pass
-            else:
-                self.current_op_points.append((lon, lat))
-                # i, j = self.__find_geocoordinates(lon, lat)
-                x, y = self.__matrixcoor2canvascoor(i, j)
-                self.tag_operation_point.append(self.canvas.create_oval(x-5, y-5, x+5, y+5, fill='yellow'))
-
+        try:
+            self.operation_file = open('data/operationpoints.txt')
             line = self.operation_file.readline()
-        self.operation_file.close()
+            while line:
+                # print line
+                item = line.strip('\n').split('\t')
+                lon = float(item[0])
+                lat = float(item[1])
+                self.recent_op_points.append((lon, lat))
+
+                try:
+                    i, j = self.__find_geocoordinates(lon, lat)
+                except RuntimeError:
+                    pass
+                else:
+                    self.current_op_points.append((lon, lat))
+                    # i, j = self.__find_geocoordinates(lon, lat)
+                    x, y = self.__matrixcoor2canvascoor(i, j)
+                    self.tag_operation_point.append(self.canvas.create_oval(x-5, y-5, x+5, y+5, fill='yellow'))
+
+                line = self.operation_file.readline()
+            self.operation_file.close()
+        except:
+            pass
 
         # create a thread for refreshing model regularly
         # th = threading.Thread(target=self.__refresh_model_regularly)
@@ -391,16 +395,6 @@ class MainWindow(object):
         
         new_factor = self.zoom_level[index + 1]
         self.__rescale(new_factor)
-
-
-    def __callback_bk_showhide_keypoint(self):
-        if self.tag_keypoints != []:       #hide
-            for k in self.tag_keypoints:
-                self.canvas.delete(k)
-            self.tag_keypoints = []
-        else:       #show
-            self.__draw_keypoints()
-
 
     def __callback_b7_genpath(self):
 
@@ -576,7 +570,7 @@ class MainWindow(object):
             e.delete(0, 'end')
 
         # reset control variables
-        self.optimize_target.set('路程与破冰')
+        self.optimize_target.set('')
         self.mouse_status.set(0)
         self.sc.set(0)
         # self.sc.grid_remove()
@@ -588,11 +582,11 @@ class MainWindow(object):
         # clear canvas
         self.canvas.delete("all")
         self.canvas.create_image(0, 0, image=self.imtk, anchor='nw')
+        self.__draw_operation_point()
 
         # clear canvas tags
         self.tag_graticule = []
-        self.tag_keypoints = []
-        self.tag_operation_point = []
+        # self.tag_operation_point = []
         self.tag_start_point = None
         self.tag_end_point = None
         self.tag_query_point = None
@@ -740,6 +734,8 @@ class MainWindow(object):
             i, j = self.__find_geocoordinates(lon, lat)
         except RuntimeError:
             return
+        except IndexError:
+            return
 
         self.current_op_points.append((lon, lat))
 
@@ -852,12 +848,11 @@ class MainWindow(object):
 
         text = '请求SAR图，所需要覆盖面积为' + pos_text1 + '到' + pos_text2
 
-        try:
-            send_mail.send(self.entry_mail.get(), text)
-        except:
-            tkMessageBox.showerror('Error', '邮件发送失败')
-        else:
+        sent = send_mail.send(self.entry_mail.get(), text)
+        if sent:
             tkMessageBox.showinfo('Info', '邮件发送成功')
+        else:
+            tkMessageBox.showerror('Error', '邮件发送失败')
         self.sarFrame.destroy()
 
     def __close_point_frame(self):
@@ -976,6 +971,7 @@ class MainWindow(object):
             lon = self.lonlat_mat[i, j][0]
             lat = self.lonlat_mat[i, j][1]
             prob = self.prob_mat[i, j]
+            mask = self.ice_mat[i, j]
 
             areatext = '浮冰面积小于'
             if prob[2] > 0.3:
@@ -986,7 +982,16 @@ class MainWindow(object):
             text_cotent = '经度: %.2f, 纬度: %.2f'%(lon, lat) + '\n' + \
                 '海: %.4f'%prob[0] + '\n' + \
                 '薄冰薄云: %.4f'%prob[1] + '\n' + \
-                '厚冰厚云: %.4f'%prob[2] + '\n' + areatext
+                '厚冰厚云: %.4f'%prob[2]
+
+            # print mask
+
+            if mask:
+                text_cotent = text_cotent + '(厚冰)'
+            else:
+                text_cotent = text_cotent + '(厚云)'
+
+            text_cotent = text_cotent + '\n' + areatext
 
             x_offset, y_offset = 220, 90
 
@@ -1035,6 +1040,10 @@ class MainWindow(object):
             entry.delete(0, 'end')
             tkMessageBox.showerror('Wrong','不是合法的输入')
 
+        except IndexError:
+            entry.delete(0, 'end')
+            tkMessageBox.showerror('Wrong','经纬度不在范围内')
+
         except RuntimeError:
             g[0].delete(0, 'end')
             g[1].delete(0, 'end')
@@ -1061,6 +1070,8 @@ class MainWindow(object):
             self.__draw_temp_point()
 
     def __point_frame_input_check(self, event):
+        entry = event.widget
+
         if self.entry_lon.get() == "" and self.entry_lat.get() == "":
             return
 
@@ -1075,9 +1086,12 @@ class MainWindow(object):
                 i, j = self.__find_geocoordinates(lon, lat)
 
         except ValueError:
-            self.entry_lon.delete(0, 'end')
-            self.entry_lat.delete(0, 'end')
+            entry.delete(0, 'end')
             tkMessageBox.showerror('Wrong','不是合法的输入')
+
+        except IndexError:
+            entry.delete(0, 'end')
+            tkMessageBox.showerror('Wrong','经纬度不在范围内')
 
         except RuntimeError:
             self.entry_lon.delete(0, 'end')
@@ -1119,6 +1133,10 @@ class MainWindow(object):
             entry.delete(0, 'end')
             tkMessageBox.showerror('Wrong','不是合法的输入')
 
+        except IndexError:
+            entry.delete(0, 'end')
+            tkMessageBox.showerror('Wrong','经纬度不在范围内')
+
         except RuntimeError:
             g[0].delete(0, 'end')
             g[1].delete(0, 'end')
@@ -1150,6 +1168,7 @@ class MainWindow(object):
         costimgfile = modisimgfile[0:-4] + '.cost'
         probfile = modisimgfile[0:-4] + '.prob'
         lonlatfile = modisimgfile[0:-4] + '.lonlat'
+        icefile = modisimgfile[0:-4] + '.ice'
 
         # file existence
         if not os.path.isfile(modisimgfile) or not os.path.isfile(costimgfile) or not os.path.isfile(probfile) or not os.path.isfile(lonlatfile):
@@ -1161,9 +1180,11 @@ class MainWindow(object):
 
         fprob = open(probfile,'rb')
         flonlat = open(lonlatfile, 'rb')
+        fice = open(icefile, 'rb')
 
         self.prob_mat = pickle.load(fprob)
         self.lonlat_mat = pickle.load(flonlat)
+        self.ice_mat = pickle.load(fice)
         
         self.modisimg = Image.open(modisimgfile)
         self.modisimg = self.modisimg.crop((0, 0, (self.modisimg.width/beta)*beta, (self.modisimg.height/beta)*beta))   # divisible by beta
@@ -1186,6 +1207,7 @@ class MainWindow(object):
         self.model = ModisMap(self.prob_mat)
 
         assert self.modisimg.size == self.costimg.size
+        # assert self.iceorcloud_mat.shape == self.prob_mat.shape
         assert self.prob_mat.shape[0:2] == self.lonlat_mat.shape[0:2]
         assert self.prob_mat.shape[0] * beta  == self.modisimg.size[1]
         assert self.prob_mat.shape[1] * beta  == self.modisimg.size[0]
@@ -1260,9 +1282,6 @@ class MainWindow(object):
         self.__draw_path()
         self.__draw_temp_point()
         self.tag_query_point = self.tag_rect = self.tag_infotext = None
-
-        if self.tag_keypoints != []:
-            self.__draw_keypoints()
 
         if self.tag_operation_point != []:
             self.__draw_operation_point()
@@ -1655,26 +1674,10 @@ class MainWindow(object):
             tp = self.canvas.create_line(cx, cy, nx, ny, fill='#7FFF00', width=width)
             self.tag_path.append(tp)
 
-    def __draw_keypoints(self):
-        key_points = [[-169.00, 66.10], [-169.00, 66.52], [-169.00, 67.32], [-169.00, 69.32], [-169.00, 70.20],
-                     [-169.00, 71.11], [-169.00, 71.59], [-180.00, 75.06], [-180.00, 76.00], [-180.00, 77.00], [-180.00, 77.54],
-                     [-180.00, 78.54], [-180.00, 79.54], [-172.00, 64.00], [-169.00, 64.00], [-168.00, 64.00], [-167.00, 64.20],
-                     [-167.48, 64.20], [-168.36, 64.20], [-169.24, 64.20], [-170.12, 64.20], [-171.00, 64.20]]
-        for key in key_points:
-            lon = float(key[0])
-            lat = float(key[1])
-
-            i, j = self.__find_geocoordinates(lon, lat)
-            x, y = self.__matrixcoor2canvascoor(i, j)
-
-            k = self.canvas.create_oval(x-5, y-5, x+5, y+5, fill='yellow')
-            self.tag_keypoints.append(k)
-
-
     def __draw_diagram(self, start, end, path):
 
-        i_from, i_to = min(start[0], end[0])-10, max(start[0], end[0])+10   #todo model.get_search_area()
-        j_from, j_to = min(start[1], end[1])-10, max(start[1], end[1])+10
+        i_from, i_to = min(start[0], end[0])-20, max(start[0], end[0])+20   #todo model.get_search_area()
+        j_from, j_to = min(start[1], end[1])-20, max(start[1], end[1])+20
         i_len, j_len = i_to-i_from, j_to-j_from
 
         value_matrix = self.prob_mat[i_from:i_to, j_from:j_to, 2]     # thick ice/cloud
@@ -1757,36 +1760,36 @@ class MainWindow(object):
     def __check_input(self, string, is_lon):
         value = -1
 
-        pattern1 = '^[+-]?\d{2,3} \d{2} \d{2} ?$'
-        pattern2 = '^[+-]?\d{2,3}\.?\d*$'
+        pattern1 = '^[+-]?\d{1,3} \d{1,2} \d{1,2} ?$'
+        pattern2 = '^[+-]?\d{1,3}\.?\d*$'
         # print (re.match(pattern2, string))
         if re.match(pattern1, string) != None:          # degree, minute, second
             values = string.split(' ')
             # print values
             if float(values[1]) >= 60.00 or float(values[1]) < 0.00 or float(values[2]) >= 60.00 or float(values[2]) < 0.00:
-                raise RuntimeError('Out of range')
+                raise IndexError('Out of range')
             if is_lon:
                 if float(values[0]) > 179.00:
                     if float(values[1]) > 0.00 and float(values[2]) > 0.00:
-                        raise RuntimeError('Out of range')
+                        raise IndexError('Out of range')
                     if float(values[1]) > 180.00:
-                        raise RuntimeError('Out of range')
+                        raise IndexError('Out of range')
                 if float(values[0]) < -179.00:
                     if float(values[1]) > 0.00 and float(values[2]) > 0.00:
-                        raise RuntimeError('Out of range')
+                        raise IndexError('Out of range')
                     if float(values[1]) < -180.00:
-                        raise RuntimeError('Out of range')
+                        raise IndexError('Out of range')
             else:
                 if float(values[0]) > 89.00:
                     if float(values[1]) > 0.00 and float(values[2]) > 0.00:
-                        raise RuntimeError('Out of range')
+                        raise IndexError('Out of range')
                     if float(values[1]) > 90.00:
-                        raise RuntimeError('Out of range')
+                        raise IndexError('Out of range')
                 if float(values[0]) < -89.00:
                     if float(values[1]) > 0.00 and float(values[2]) > 0.00:
-                        raise RuntimeError('Out of range')
+                        raise IndexError('Out of range')
                     if float(values[1]) < -90.00:
-                        raise RuntimeError('Out of range')
+                        raise IndexError('Out of range')
             if float(values[0]) > 0:
                 value = float('%.2f'%(float(values[0]) + float(values[1])/60.00 + float(values[2])/3600.00))
             else:
@@ -1795,10 +1798,10 @@ class MainWindow(object):
             value = float('%.2f'%float(string))
             if is_lon:
                 if value > 180.00 or value < -180.00:
-                    raise RuntimeError('Out of range')
+                    raise IndexError('Out of range')
             else:
                 if value > 90.00 or value < -90.00:
-                    raise RuntimeError('Out of range')
+                    raise IndexError('Out of range')
         else:
             raise ValueError('Illegal input')
         return value
@@ -1806,7 +1809,33 @@ class MainWindow(object):
     ### threading ##################################################################
 
     def __update_files(self):
-        pass
+        # pass
+        user = 'PolarRecieveZip@163.com'
+        password = 'PolarEmail123'
+        pop3_server = 'pop.163.com'
+        get_email_zip.checkemail(user,password,pop3_server,215)
+        unzipfile.unzipfile('download/test.zip', 'data/')
+        from shutil import move
+        for dirpath, dirnames, filenames in os.walk('data/test'):
+            for filename in filenames:
+                move('data/test/'+filename, 'data/'+filename)
+                print filename
+        self.__init_models()
+        clearfile.clear_raster()
+        # save
+        ee = [self.e1, self.e2, self.e3, self.e4]
+        ss = [e.get() for e in ee]
+
+        # refresh
+        self.__callback_b9_reset()
+
+        # load
+        for e, s in zip(ee, ss):
+            e.insert(0, s)
+        self.__draw_start_point()
+        self.__draw_end_point()
+
+        sys.stdout.flush()
 
     # this function will run as a daemon thread 
     def __refresh_model_regularly(self):        

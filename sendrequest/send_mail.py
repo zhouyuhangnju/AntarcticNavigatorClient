@@ -5,54 +5,44 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
-# def send(receiver, content):
-#     sender = 'fanying_yt@163.com'
-#     passwd = 'fy1259680'
-#
-#     msg = MIMEMultipart()
-#     msg['to'] = receiver
-#     msg['from'] = sender
-#
-#     today = datetime.date.today()
-#     msg['subject'] = today.strftime('%Y-%m-%d') + '：SAR图请求'
-#
-#     txt = MIMEText(content,'plain','UTF-8')
-#     msg.attach(txt)
-#
-#     try:
-#         smtp = smtplib.SMTP()
-#         smtp.connect('smtp.163.com')
-#         smtp.login(sender, passwd)
-#         smtp.sendmail(sender, receiver, msg.as_string())
-#         smtp.quit()
-#     except smtplib.SMTPException:
-#         print "Error: 无法发送邮件"
-
 def send(receiver, subject):
-    sender = 'fanying_yt@163.com'
-    passwd = 'fy1259680'
+    sender = 'PolarSendReq@163.com'
+    passwd = 'PolarEmail1234'
+    # sender = 'fanying_yt@163.com'
+    # passwd = 'fy1259680'
 
     msg = MIMEMultipart()
     msg['to'] = receiver
     msg['from'] = sender
 
-    today = datetime.date.today()
+    # today = datetime.date.today()
     # msg['subject'] = today.strftime('%Y-%m-%d') + '：SAR图请求'
     msg['subject'] = subject
 
-    txt = MIMEText('','plain','UTF-8')
+    txt = MIMEText('南极项目','plain','UTF-8')
     msg.attach(txt)
-
+    # smtp = smtplib.SMTP()
+    # smtp.connect('smtp.163.com')
+    # smtp.login(sender, passwd)
+    # smtp.sendmail(sender, receiver, msg.as_string())
+    # smtp.quit()
+    # return True
     try:
         smtp = smtplib.SMTP()
         smtp.connect('smtp.163.com')
         smtp.login(sender, passwd)
         smtp.sendmail(sender, receiver, msg.as_string())
         smtp.quit()
-    except smtplib.SMTPException:
+        print('send success')
+        return True
+    except Exception, e:
         print "Error: 无法发送邮件"
+        return False
+
+
+
 
 if __name__ == '__main__':
-    receive = '707949748@qq.com'
-    content = 'test'
+    receive = '1584743373@qq.com'
+    content = '[south]'
     send(receive, content)

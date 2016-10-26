@@ -6,8 +6,8 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
 def send(receiver, content):
-    sender = 'fanying_yt@163.com'
-    passwd = 'fy1259680'
+    sender = 'PolarRequestSAR@163.com'
+    passwd = 'PolarEmail123'
 
     msg = MIMEMultipart()
     msg['to'] = receiver
@@ -25,10 +25,7 @@ def send(receiver, content):
         smtp.login(sender, passwd)
         smtp.sendmail(sender, receiver, msg.as_string())
         smtp.quit()
+        return True
     except smtplib.SMTPException:
         print "Error: 无法发送邮件"
-
-if __name__ == '__main__':
-    receive = '707949748@qq.com'
-    content = 'test'
-    send(receive, content)
+        return False
