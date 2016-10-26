@@ -83,7 +83,7 @@ def print_info(msg, indent=0):
                          ext = '.bin'
                      filename = 'part-%03d%s' % (counter, ext)
                  counter += 1
-                 if os.path.exist('download'):
+                 if os.path.exists('download'):
                      os.rmtree('download')
                  os.mkdir('download')
                  fp = open(os.path.join('download', filename), 'wb')
