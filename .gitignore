@@ -1,6 +1,2 @@
-/*
-! /modispath/ /sendrequest/
-/modispath/
-! *.py
-/sendrequest
-! *.py
+/modispath/data
+*.pyc

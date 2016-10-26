@@ -106,10 +106,10 @@ class PointWindow(Frame):
             lon = -1
             lat = -1
             if g[0].get() != "":
-                print('g[0].get()', g[0].get())
+
                 lon = self.__check_input(g[0].get(), True)
             if g[1].get() != "":
-                print('g[1].get()', g[1].get())
+
                 lat = self.__check_input(g[1].get(), False)
             # if g[0].get() != "" and g[1].get() != "":
             #     i, j = self.__find_geocoordinates(lon, lat)
@@ -135,11 +135,11 @@ class PointWindow(Frame):
 
 
     def __callback_send_require(self):
-        print('send')
+
         receive = 'PolarReceiveReq@163.com'
         # content = 'test'
         # send_mail.send(receive, content)
-        print('self.entry_leftlon.get()', self.entry_leftlon.get())
+
         self.w_long = self.__check_input(self.entry_leftlon.get(), True)
         self.e_long = self.__check_input(self.entry_rightlon.get(), True)
         self.n_lati = self.__check_input(self.entry_leftlat.get(), False)
@@ -163,11 +163,10 @@ class PointWindow(Frame):
 
         pattern1 = '^[+-]?\d{1,3} \d{1,2} \d{1,2} ?$'
         pattern2 = '^[+-]?\d{1,3}\.?\d*$'
-        print('string',string)
-        print (re.match(pattern1, string))
+
         if re.match(pattern1, string) != None:  # degree, minute, second
             values = string.split(' ')
-            print(values)
+
             if float(values[1]) >= 60.00 or float(values[1]) < 0.00 or float(values[2]) >= 60.00 or float(
                     values[2]) < 0.00:
                 raise RuntimeError('Out of range')
@@ -207,7 +206,7 @@ class PointWindow(Frame):
                     raise RuntimeError('Out of range')
         else:
             raise ValueError('Illegal input')
-        print(value)
+
         return value
 
 if __name__ == '__main__':
