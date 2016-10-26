@@ -1613,7 +1613,7 @@ class MainWindow(object):
             lon, lat = item
             # lat = self.__check_input(item[1], True)
             # lon = self.__check_input(item[0], False)
-
+			
             i, j = self.__find_geocoordinates(lon, lat)
             x, y = self.__matrixcoor2canvascoor(i, j)
 
