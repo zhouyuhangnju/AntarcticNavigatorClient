@@ -7,7 +7,7 @@ from email.mime.multipart import MIMEMultipart
 
 def send(receiver, content):
     sender = 'PolarRequestSAR@163.com'
-    passwd = 'PolarEmail123'
+    passwd = 'PolarEmail1234'
 
     msg = MIMEMultipart()
     msg['to'] = receiver

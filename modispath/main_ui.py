@@ -1811,9 +1811,9 @@ class MainWindow(object):
     def __update_files(self):
         # pass
         user = 'PolarRecieveZip@163.com'
-        password = 'PolarEmail123'
+        password = 'PolarEmail1234'
         pop3_server = 'pop.163.com'
-        get_email_zip.checkemail(user,password,pop3_server,215)
+        get_email_zip.checkemail(user,password,pop3_server,0)
         unzipfile.unzipfile('download/test.zip', 'data/')
         from shutil import move
         for dirpath, dirnames, filenames in os.walk('data/test'):
