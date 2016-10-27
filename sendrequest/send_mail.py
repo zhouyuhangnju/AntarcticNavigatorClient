@@ -27,7 +27,7 @@ def send(receiver, subject):
     # return True
     try:
         smtp = smtplib.SMTP_SSL()
-        smtp.connect('lamda.nju.edu.cn', 465)
+        smtp.connect('210.28.132.67', 465)
         smtp.ehlo()
         smtp.login(sender, passwd)
         smtp.sendmail(sender, receiver, msg.as_string())
