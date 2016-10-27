@@ -139,11 +139,3 @@ def checkemail(user,password,pop3_server,prenum):
 
 	server.quit()
 	return index,None
-
-
-if __name__ == "__main__":
-	user = 'fanying_yt@163.com'
-	password = 'fy1259680'
-	pop3_server = 'pop.163.com'
-	specified_email = '1584743373@qq.com'
-	checkemail(user,password,pop3_server,215)

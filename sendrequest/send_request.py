@@ -1,6 +1,7 @@
 # encoding:utf-8
 from Tkinter import *
 import tkMessageBox
+from mailutil import getemailpsw
 import send_mail
 class PointWindow(Frame):
     def __init__(self, master):
@@ -146,8 +147,8 @@ class PointWindow(Frame):
         self.s_lati = self.__check_input(self.entry_rightlat.get(), False)
         self.cur_long = self.__check_input(self.entry_curlon.get(), True)
         self.cur_lati = self.__check_input(self.entry_curlat.get(), False)
-        if (self.n_lati < self.s_lati):
-            tkMessageBox.showerror('Wrong', '北纬需要大于南纬')
+        # if (self.n_lati < self.s_lati):
+        #     tkMessageBox.showerror('Wrong', '北纬需要大于南纬')
         subject = ('[south]' +  str(self.w_long) +  ' ' +  str(self.e_long) +  ' ' +  str(self.n_lati) +
                    ' ' + str(self.s_lati) +  ' ' +  str(self.cur_long) +  ' ' +  str(self.cur_lati))
         ifsucss = send_mail.send(receive, subject)

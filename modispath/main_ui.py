@@ -13,6 +13,7 @@ import tkMessageBox
 import send_mail
 import get_email_zip
 import unzipfile
+from mailutil import getemailpsw
 import clearfile
 from time import sleep
 from datetime import datetime
@@ -252,14 +253,14 @@ class MainWindow(object):
         self.sct = tk.Label(frame_temp, text='更短路径   更少破冰', font=('Purisa', 9))
         self.sc.grid(row=0, column=1)
         self.sct.grid(row=1, column=1)
-        # self.sc.grid_remove()
-        # self.sct.grid_remove()
+        self.sc.grid_remove()
+        self.sct.grid_remove()
         self.b10 = tk.Button(frame_temp, text='-', command=self.__callback_b10_minus)
         self.b11 = tk.Button(frame_temp, text='+', command=self.__callback_b11_add)
         self.b10.grid(row=0, column=0)
         self.b11.grid(row=0, column=2)
-        # self.b10.grid_remove()
-        # self.b11.grid_remove()
+        self.b10.grid_remove()
+        self.b11.grid_remove()
 
 
         b7 = tk.Button(frame_right, command=self.__callback_b7_genpath, text='生成路径')
@@ -582,7 +583,27 @@ class MainWindow(object):
         # clear canvas
         self.canvas.delete("all")
         self.canvas.create_image(0, 0, image=self.imtk, anchor='nw')
-        self.__draw_operation_point()
+        # self.__draw_operation_point()
+
+        self.tag_operation_point = []
+
+        if len(self.current_op_points) != 0:
+            for item in self.current_op_points:
+                self.current_op_points.remove(item)
+
+        self.current_op_points = []
+        for item in self.recent_op_points:
+            lon, lat = item[0], item[1]
+
+            try:
+                i, j = self.__find_geocoordinates(lon, lat)
+            except RuntimeError:
+                pass
+            else:
+                self.current_op_points.append((lon, lat))
+                # i, j = self.__find_geocoordinates(lon, lat)
+                x, y = self.__matrixcoor2canvascoor(i, j)
+                self.tag_operation_point.append(self.canvas.create_oval(x-5, y-5, x+5, y+5, fill='yellow'))
 
         # clear canvas tags
         self.tag_graticule = []
@@ -1810,8 +1831,9 @@ class MainWindow(object):
 
     def __update_files(self):
         # pass
-        user = 'PolarRecieveZip@163.com'
-        password = 'PolarEmail1234'
+        # user = 'PolarRecieveZip@163.com'
+        # password = 'PolarEmail1234'
+        user, password = getemailpsw(3)
         pop3_server = 'pop.163.com'
         get_email_zip.checkemail(user,password,pop3_server,0)
         unzipfile.unzipfile('download/test.zip', 'data/')
@@ -1821,7 +1843,7 @@ class MainWindow(object):
                 move('data/test/'+filename, 'data/'+filename)
                 print filename
         self.__init_models()
-        clearfile.clear_raster()
+        # clearfile.clear_raster()
         # save
         ee = [self.e1, self.e2, self.e3, self.e4]
         ss = [e.get() for e in ee]
