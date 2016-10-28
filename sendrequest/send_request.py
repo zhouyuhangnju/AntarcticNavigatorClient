@@ -1,5 +1,5 @@
 # encoding:utf-8
-from Tkinter import *
+from mtTkinter import *
 import tkMessageBox
 from mailutil import getemailpsw
 import send_mail

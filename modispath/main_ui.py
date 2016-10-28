@@ -23,10 +23,22 @@ from collections import Counter     # to get mode of a list
 import numpy as np
 import matplotlib.pyplot as plt     # draw cost diagram
 
-from PIL import ImageTk, Image, ImageDraw, ImageFont
+from PIL import ImageTk, Image, ImageGrab
 
 # hand-written modules of this project
 from getpath import ModisMap
+
+import ctypes
+import win32gui
+import ctypes.wintypes
+class RECT(ctypes.Structure):
+    _fields_ = [('left', ctypes.c_long),
+                ('top', ctypes.c_long),
+                ('right', ctypes.c_long),
+                ('bottom', ctypes.c_long)]
+    def __str__(self):
+        return str((self.left, self.top, self.right, self.bottom))
+
 
 
 # todo list 
@@ -92,11 +104,6 @@ class MainWindow(object):
         self.lonlat_mat = None
 
         self.operation_file = None
-
-        self.printmodisimg = None
-        self.printcostimg = None
-        self.drawmodisimg = None
-        self.drawcostimg = None
 
         self.__init_models()
 
@@ -490,27 +497,20 @@ class MainWindow(object):
 
     # todo
     def __callback_print_trace(self):
+        printname = 'print.jpg'
 
-        # printname = ''
-        # # draw and save image, then print
-        # if self.show_cost:
-        #     # operation on printcostimg
-        #     self.__print_save_img()
-        #     del self.printcostimg
-        #     printname = 'printcostimg.jpg'
-        #     self.costimg.save(printname)
-        #     self.printcostimg = ImageDraw.Draw(self.costimg)
-        # else:
-        #     # operation on printmodisimg
-        #     self.__print_save_img()
-        #     del self.printmodisimg
-        #     printname = 'printmodisimg.jpg'
-        #     self.drawmodisimg.show()
-        #     self.drawmodisimg.save(printname)
-        #     # self.modisimg.save(sys.stdout, "PNG")
-        #     self.printmodisimg = ImageDraw.Draw(self.modisimg)
-        # import printer
-        # printer.send_to_printer(printname)
+        # get current window
+        rect = RECT()
+        HWND = win32gui.GetForegroundWindow()
+        ctypes.windll.user32.GetWindowRect(HWND,ctypes.byref(rect))
+        rangle = (rect.left+2,rect.top+2,rect.right-2,rect.bottom-2)
+
+        # grab picture and save
+        pic = ImageGrab.grab(rangle)
+        pic.save(printname)
+
+        import printer
+        printer.send_to_printer(printname)
         return
 
     def __callback_sar_send(self):
@@ -1216,15 +1216,6 @@ class MainWindow(object):
         if self.modisimg.size[0] > 6000 or self.modisimg.size[1] > 6000:
             print 'Warning: current modis image file large than 6000*6000'
 
-        # self.drawmodisimg = Image.open(modisimgfile)
-        # self.drawmodistimg = self.modisimg.crop((0, 0, (self.drawmodisimg.width/beta)*beta, (self.drawmodisimg.height/beta)*beta))   # divisible by beta
-        #
-        # self.drawcostimg = Image.open(costimgfile)
-        # self.drawcostimg = self.drawcostimg.resize((int(self.prob_mat.shape[1] * beta), int(self.prob_mat.shape[0] * beta)))
-        #
-        # self.printmodisimg = ImageDraw.Draw(self.drawmodisimg)
-        # self.printcostimg = ImageDraw.Draw(self.drawcostimg)
-
         self.model = ModisMap(self.prob_mat)
 
         assert self.modisimg.size == self.costimg.size
@@ -1908,45 +1899,6 @@ class MainWindow(object):
                 sys.stdout.flush()
 
             sleep(30)
-
-    def __print_save_img(self):
-        print self.tag_start_point
-        print self.tag_end_point
-        print self.path
-        if self.tag_graticule != []:
-            pass
-        if self.tag_path != []:
-            for i in range(0, len(self.path)-1):
-                cx, cy = self.__matrixcoor2canvascoor(self.path[i][0], self.path[i][1])
-                nx, ny = self.__matrixcoor2canvascoor(self.path[i+1][0], self.path[i+1][1])
-                self.printmodisimg.line([cx, cy, nx, ny], fill='#7FFF00', width=10)
-                self.printcostimg.line([cx, cy, nx, ny], fill='#7FFF00', width=10)
-        if self.tag_operation_point != []:
-            for item in self.current_op_points:
-                lat = float(item[1])
-                lon = float(item[0])
-                i, j = self.__find_geocoordinates(lon, lat)
-                x, y = self.__matrixcoor2canvascoor(i, j)
-                self.printmodisimg.ellipse(x-15, y-15, x+15, y+15, fill='yellow')
-                self.printcostimg.ellipse(x-15, y-15, x+15, y+15, fill='yellow')
-        if self.tag_start_point != None:
-            print 'start'
-            lon = float(self.e1.get())
-            lat = float(self.e2.get())
-            i, j = self.__find_geocoordinates(lon, lat)
-            x, y = self.__matrixcoor2canvascoor(i, j)
-            self.printmodisimg.ellipse([x-15, y-15, x+15, y+15], fill='red')
-            self.printcostimg.ellipse([x-15, y-15, x+15, y+15], fill='red')
-            print x,y
-        if self.tag_end_point != None:
-            print 'end'
-            lon = float(self.e3.get())
-            lat = float(self.e4.get())
-            i, j = self.__find_geocoordinates(lon, lat)
-            x, y = self.__matrixcoor2canvascoor(i, j)
-            self.printmodisimg.ellipse([x-15, y-15, x+15, y+15], fill='blue')
-            self.printcostimg.ellipse([x-15, y-15, x+15, y+15], fill='blue')
-            print x,y
 
 ####################################################################################
 ### end of class MainWindow ########################################################
