@@ -7,7 +7,7 @@ class PointWindow(Frame):
     def __init__(self, master):
         Frame.__init__(self, master)
         # self.frame_receive = Frame(master, width=500)
-        self.frame_range = Frame(master, width=500)
+        self.frame_range = Frame(master, width=400)
         # self.frame_receive.pack()
         self.frame_range.pack()
         #
@@ -22,44 +22,32 @@ class PointWindow(Frame):
         self.label_blank = Label(self.frame_range, text='')
         self.label_blank.grid(row=0, column=0)
 
-        self.label_leftlon = Label(self.frame_range, text='左上角经度:')
+        self.label_leftlon = Label(self.frame_range, text='经度西界:')
         self.label_leftlon.grid(row=1, column=0, padx=5, pady=5)
         self.entry_leftlon = Entry(self.frame_range, width=8)
         self.entry_leftlon.grid(row=1, column=1, padx=5, pady=5)
 
-        self.label_leftlat = Label(self.frame_range, text='左上角纬度:')
+        self.label_leftlat = Label(self.frame_range, text='纬度北界:')
         self.label_leftlat.grid(row=1, column=2, padx=5, pady=5)
         self.entry_leftlat = Entry(self.frame_range, width=8)
         self.entry_leftlat.grid(row=1, column=3, padx=5, pady=5)
 
-        self.label_rightlon = Label(self.frame_range, text='右下角经度:')
+        self.label_rightlon = Label(self.frame_range, text='经度东界:')
         self.label_rightlon.grid(row=2, column=0, padx=5, pady=5)
         self.entry_rightlon = Entry(self.frame_range, width=8)
         self.entry_rightlon.grid(row=2, column=1, padx=5, pady=5)
 
-        self.label_rightlat = Label(self.frame_range, text='右下角纬度:')
+        self.label_rightlat = Label(self.frame_range, text='纬度南界:')
         self.label_rightlat.grid(row=2, column=2, padx=5, pady=5)
         self.entry_rightlat = Entry(self.frame_range, width=8)
         self.entry_rightlat.grid(row=2, column=3, padx=5, pady=5)
-
-        self.label_curlon = Label(self.frame_range, text='当前经度:')
-        self.label_curlon.grid(row=3, column=0, padx=5, pady=5)
-        self.entry_curlon = Entry(self.frame_range, width=8)
-        self.entry_curlon.grid(row=3, column=1, padx=5, pady=5)
-
-        self.label_curlat = Label(self.frame_range, text='当前纬度:')
-        self.label_curlat.grid(row=3, column=2, padx=5, pady=5)
-        self.entry_curlat = Entry(self.frame_range, width=8)
-        self.entry_curlat.grid(row=3, column=3, padx=5, pady=5)
 
         self.w_long = -1
         self.e_long = -1
         self.n_lati = -1
         self.s_lati = -1
-        self.cur_long = -1
-        self.cur_lati = -1
 
-        for e in [self.entry_leftlon, self.entry_rightlon, self.entry_leftlat, self.entry_rightlat, self.entry_curlat, self.entry_curlat]:
+        for e in [self.entry_leftlon, self.entry_rightlon, self.entry_leftlat, self.entry_rightlat]:
             e.bind('<FocusOut>',  self.__event_range_input)
             e.bind('<Return>',  self.__event_range_input)
             # e.bind('<FocusOut>', self.__check_input)
@@ -72,7 +60,7 @@ class PointWindow(Frame):
         #     # e.bind('<Return>', self.__check_input)
 
         self.button_send = Button(self.frame_range, width=7, command=self.__callback_send_require, text='发送')
-        self.button_send.grid(row=4, column=1, columnspan=2, padx=5, pady=20)
+        self.button_send.grid(row=3, column=1, columnspan=2, padx=5, pady=20)
 
     # def __event_email_check(self, event):
     #     print('email')
@@ -89,7 +77,6 @@ class PointWindow(Frame):
 
         gleft = [self.entry_leftlon, self.entry_leftlat]  # g means group
         gright = [self.entry_rightlon, self.entry_rightlat]
-        gcur = [self.entry_curlon, self.entry_curlat]
 
         g = gleft if entry in gleft else gright
 
@@ -97,8 +84,6 @@ class PointWindow(Frame):
             g = gleft
         elif entry in gright:
             g = gright
-        elif entry in gcur:
-            g = gcur
 
         if g[0].get() == "" and g[1].get() == "":
             return
@@ -145,19 +130,16 @@ class PointWindow(Frame):
         self.e_long = self.__check_input(self.entry_rightlon.get(), True)
         self.n_lati = self.__check_input(self.entry_leftlat.get(), False)
         self.s_lati = self.__check_input(self.entry_rightlat.get(), False)
-        self.cur_long = self.__check_input(self.entry_curlon.get(), True)
-        self.cur_lati = self.__check_input(self.entry_curlat.get(), False)
-        # if (self.n_lati < self.s_lati):
-        #     tkMessageBox.showerror('Wrong', '北纬需要大于南纬')
-        subject = ('[south]' +  str(self.w_long) +  ' ' +  str(self.e_long) +  ' ' +  str(self.n_lati) +
-                   ' ' + str(self.s_lati) +  ' ' +  str(self.cur_long) +  ' ' +  str(self.cur_lati))
-        ifsucss = send_mail.send(receive, subject)
-        if(ifsucss):
-            tkMessageBox.showinfo( 'info','发送成功')
-            root.destroy()
+        if (self.n_lati < self.s_lati):
+            tkMessageBox.showerror('Wrong', '北纬需要大于南纬')
         else:
-            tkMessageBox.showerror('Wrong', '邮件发送失败，请检查网络')
-        # self.frame_range.protocol("WM_DELETE_WINDOW", self.__close_point_frame)
+            subject = ('[south]' +  str(self.w_long) +  ' ' +  str(self.e_long) +  ' ' +  str(self.n_lati) + ' ' + str(self.s_lati))
+            ifsucss = send_mail.send(receive, subject)
+            if(ifsucss):
+                tkMessageBox.showinfo( 'info','发送成功')
+                root.destroy()
+            else:
+                tkMessageBox.showerror('Wrong', '邮件发送失败，请检查网络')
 
     def __check_input(self, string, is_lon):
         value = -1
@@ -214,7 +196,7 @@ if __name__ == '__main__':
     root = Tk()
     root.title('Send Request')
     root.resizable(width=False, height=False)
-    root.geometry("450x200")
+    root.geometry("400x170")
 
     window = PointWindow(root)
     window.mainloop()

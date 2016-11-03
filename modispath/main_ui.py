@@ -123,7 +123,7 @@ class MainWindow(object):
         self.ice_weight = 0.0
         self.path = []
         self.show_cost = False
-        self.default_zoom_factor = 0.2
+        self.default_zoom_factor = 0.4
         self.zoom_factor= 1.0
         self.zoom_level = [0.1, 0.2, 0.4, 0.6, 0.8, 1.0, 1.5]    # final static
         self.optimize_target = tk.StringVar()   # control var of om (optionmenu), domain{'', '最便捷路径', '路程与破冰'}
@@ -1402,7 +1402,7 @@ class MainWindow(object):
                 x2, y2 = self.__matrixcoor2canvascoor(i_list[-1], j_list[-1])
                 g = self.canvas.create_line(x1, y1, x2, y2, fill='SeaGreen', width=width)
                 # self.printcostimg.line([x1, y1, x2, y2], fill='SeaGreen', width=width)
-                t = self.canvas.create_text(x2-2, y2-1, anchor='se', font=("Purisa",fontsize), fill='SeaGreen', text=str(int(round(lon_mat[i_list[-1], j_list[-1]]))))
+                t = self.canvas.create_text(x2-2, y2-1, anchor='se', font=("Purisa",fontsize, 'bold'), fill='SeaGreen', text=str(int(round(lon_mat[i_list[-1], j_list[-1]]))))
                 self.tag_graticule.append(g)
                 self.tag_graticule.append(t)
 
@@ -1517,7 +1517,7 @@ class MainWindow(object):
 
         if polar[0] == None or polar[1] == None:
             # draw latitude lines
-            for v in range(-80, -50, 5):
+            for v in range(-80, -50, 1):
                 line_points = []
                 for j in range(0, jlen, 10):
                     lat = lat_mat[:, j]
@@ -1534,7 +1534,7 @@ class MainWindow(object):
                     g = self.canvas.create_line(cx, cy, nx, ny, fill='SeaGreen', width=width)
                     self.tag_graticule.append(g)
                     if i == len(line_points) - 2:
-                        t = self.canvas.create_text(nx-2, ny-1, anchor='se', font=("Purisa",fontsize), fill='SeaGreen',
+                        t = self.canvas.create_text(nx-2, ny-1, anchor='se', font=("Purisa",fontsize,'bold'), fill='SeaGreen',
                                                     text=str(int(round(lat_mat[line_points[i+1][0], line_points[i+1][1]]))))
                         self.tag_graticule.append(t)
 

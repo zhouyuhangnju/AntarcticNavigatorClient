@@ -80,7 +80,7 @@ def send_to_printer(imagename):
 	#
 	bmp = Image.open (file_name)
 	if bmp.size[0] > bmp.size[1]:
-	  bmp = bmp.rotate (90)
+		bmp = bmp.rotate (90)
 
 	ratios = [1.0 * printable_area[0] / bmp.size[0], 1.0 * printable_area[1] / bmp.size[1]]
 	scale = min (ratios)

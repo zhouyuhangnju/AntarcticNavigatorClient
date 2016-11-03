@@ -24,6 +24,7 @@ import imaplib
 import re
 import mimetypes
 import os
+import shutil
 from optparse import OptionParser
 
 def LoginMail(hostname, user, password):
@@ -84,7 +85,7 @@ def print_info(msg, indent=0):
                      filename = 'part-%03d%s' % (counter, ext)
                  counter += 1
                  if os.path.exists('download'):
-                     os.rmtree('download')
+                     shutil.rmtree('download')
                  os.mkdir('download')
                  fp = open(os.path.join('download', filename), 'wb')
                  fp.write(part.get_payload(decode=True))
@@ -136,6 +137,7 @@ def checkemail(user,password,pop3_server,prenum):
 		       # raise('exception:', e)
 		       print('exception:', e)
 		       continue
-
+    # for i in range(index):
+    #     server.dele(i)
 	server.quit()
 	return index,None
