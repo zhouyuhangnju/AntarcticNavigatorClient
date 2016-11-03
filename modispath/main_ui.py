@@ -1412,8 +1412,9 @@ class MainWindow(object):
 
         # assert polar[0] != None and polar[1] != None
         if polar[0] != None and polar[1] != None:
-            assert 0 < polar[0] < ilen
-            assert 0 < polar[1] < jlen
+            print polar[0], polar[1]
+            assert 0 <= polar[0] < ilen
+            assert 0 <= polar[1] < jlen
 
             # draw latitude circles
             # notice that all latitude circles center at polar
