@@ -8,6 +8,7 @@ from mailutil import getemailpsw
 
 def send(receiver, subject):
     sender, passwd = getemailpsw(0)
+    sender = sender + '@lamda.nju.edu.cn'
 
     msg = MIMEMultipart()
     msg['to'] = receiver

@@ -97,7 +97,7 @@ def print_info(msg, indent=0):
 # 连接到POP3服务器:
 
 def checkemail(user,password,pop3_server,prenum):
-	server = poplib.POP3(pop3_server)
+	server = poplib.POP3_SSL(pop3_server, '995')
 	# 可以打开或关闭调试信息:
 	# server.set_debuglevel(1)
 	# 可选:打印POP3服务器的欢迎文字:
@@ -137,7 +137,14 @@ def checkemail(user,password,pop3_server,prenum):
 		       # raise('exception:', e)
 		       print('exception:', e)
 		       continue
-    # for i in range(index):
-    #     server.dele(i)
+	for i in range(index):
+		server.dele(i+1)
 	server.quit()
 	return index,None
+
+if __name__ == '__main__':
+    from mailutil import getemailpsw
+    user, password = getemailpsw(3)
+    user = user + '@lamda.nju.edu.cn'
+    pop3_server = '210.28.132.67'
+    checkemail(user,password,pop3_server,0)

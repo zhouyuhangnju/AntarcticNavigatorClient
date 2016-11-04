@@ -5,7 +5,7 @@ def getemailpsw(no):
         line = line.replace('\r\n', '')
         # print idx, line.split()[1]
         if idx == no:
-            email = line.split()[1]
+            email = line.split()[1].split('@')[0]
         if idx == 5:
             psw = line.split()[1]
     return email, psw

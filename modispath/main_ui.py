@@ -1412,7 +1412,7 @@ class MainWindow(object):
 
         # assert polar[0] != None and polar[1] != None
         if polar[0] != None and polar[1] != None:
-            print polar[0], polar[1]
+            # print polar[0], polar[1]
             assert 0 <= polar[0] < ilen
             assert 0 <= polar[1] < jlen
 
@@ -1826,7 +1826,8 @@ class MainWindow(object):
         # user = 'PolarRecieveZip@163.com'
         # password = 'PolarEmail1234'
         user, password = getemailpsw(3)
-        pop3_server = 'pop.163.com'
+        user = user + '@lamda.nju.edu.cn'
+        pop3_server = '210.28.132.67'
         get_email_zip.checkemail(user,password,pop3_server,0)
         unzipfile.unzipfile('download/test.zip', 'data/')
         from shutil import move
@@ -1835,7 +1836,7 @@ class MainWindow(object):
                 move('data/test/'+filename, 'data/'+filename)
                 print filename
         self.__init_models()
-        # clearfile.clear_raster()
+        clearfile.clear_raster()
         # save
         ee = [self.e1, self.e2, self.e3, self.e4]
         ss = [e.get() for e in ee]

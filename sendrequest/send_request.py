@@ -122,7 +122,7 @@ class PointWindow(Frame):
 
     def __callback_send_require(self):
 
-        receive = 'PolarReceiveReq@163.com'
+        receive = 'PolarReceiveReq@lamda.nju.edu.cn'
         # content = 'test'
         # send_mail.send(receive, content)
 
