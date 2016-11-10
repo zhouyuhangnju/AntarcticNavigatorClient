@@ -115,6 +115,8 @@ def checkemail(user,password,pop3_server,prenum):
 	# 获取最新一封邮件, 注意索引号从1开始:
 	index = len(mails)
 	if index == prenum:
+		# print 'in'
+		# print index
 		return index, None
 
 	unseennum = index - prenum

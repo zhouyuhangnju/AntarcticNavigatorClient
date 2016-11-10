@@ -1828,7 +1828,10 @@ class MainWindow(object):
         user, password = getemailpsw(3)
         user = user + '@lamda.nju.edu.cn'
         pop3_server = '210.28.132.67'
-        get_email_zip.checkemail(user,password,pop3_server,0)
+        index, t = get_email_zip.checkemail(user,password,pop3_server,0)
+        if index == 0:
+            tkMessageBox.showinfo('Info', '暂未有图像更新，请稍候')
+            return
         unzipfile.unzipfile('download/test.zip', 'data/')
         from shutil import move
         for dirpath, dirnames, filenames in os.walk('data/test'):
