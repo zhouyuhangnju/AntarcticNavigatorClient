@@ -130,16 +130,16 @@ class PointWindow(Frame):
         self.e_long = self.__check_input(self.entry_rightlon.get(), True)
         self.n_lati = self.__check_input(self.entry_leftlat.get(), False)
         self.s_lati = self.__check_input(self.entry_rightlat.get(), False)
-        if (self.n_lati < self.s_lati):
-            tkMessageBox.showerror('Wrong', '北纬需要大于南纬')
+        # if (self.n_lati < self.s_lati):
+        #     tkMessageBox.showerror('Wrong', '北纬需要大于南纬')
+        # else:
+        subject = ('[south]' +  str(self.w_long) +  ' ' +  str(self.e_long) +  ' ' +  str(self.n_lati) + ' ' + str(self.s_lati))
+        ifsucss = send_mail.send(receive, subject)
+        if(ifsucss):
+            tkMessageBox.showinfo( 'info','发送成功')
+            root.destroy()
         else:
-            subject = ('[south]' +  str(self.w_long) +  ' ' +  str(self.e_long) +  ' ' +  str(self.n_lati) + ' ' + str(self.s_lati))
-            ifsucss = send_mail.send(receive, subject)
-            if(ifsucss):
-                tkMessageBox.showinfo( 'info','发送成功')
-                root.destroy()
-            else:
-                tkMessageBox.showerror('Wrong', '邮件发送失败，请检查网络')
+            tkMessageBox.showerror('Wrong', '邮件发送失败，请检查网络')
 
     def __check_input(self, string, is_lon):
         value = -1
