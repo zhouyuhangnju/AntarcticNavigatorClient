@@ -58,11 +58,20 @@ def print_info(msg, indent=0):
             if value:
                 if header=='Subject':
                     value = decode_str(value)
-                    # pr               int('subject', value)
+                    # print('subject', value)
                     if value[0:7] == '[south]':
-                        longitati = value;
+                        l_time = value.split(' ')[2]
+                        if os.path.exists('time.txt'):
+                            time_log = open('time.txt')
+                            if l_time > time_log.readline():
+                                mark = True
+                            time_log.close()
+                        if mark or not os.path.exists('time.txt'):
+                            new_log = open('time.txt', 'w')
+                            new_log.write(l_time)
+                            new_log.close()
                         # print('longitati', longitati)
-                        mark = True
+                        # mark = True
                 else:
                     hdr, addr = parseaddr(value)
                     name = decode_str(hdr)

@@ -7,13 +7,13 @@ def clear_raster(folder1 = 'data/'):
             if filename == 'readme.txt' or filename == 'operationpoints.txt':
                 continue
             else:
-                listset.add(filename.split('.')[0].split('_')[0])
+                listset.add(int(filename.split('.')[0].split('_')[0]))
     if len(listset) <= 2:
         return
 
     listset = sorted(listset, reverse=True)
     # print fileset
-    savefiles = [listset[0], listset[1]]
+    savefiles = [str(listset[0]), str(listset[1])]
 
     for dripath, dirnames, filenames in os.walk(folder1):
         for filename in filenames:
