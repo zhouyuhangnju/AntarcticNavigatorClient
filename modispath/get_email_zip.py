@@ -70,6 +70,7 @@ def print_info(msg, indent=0):
                             new_log = open('time.txt', 'w')
                             new_log.write(l_time)
                             new_log.close()
+                            mark = True
                         # print('longitati', longitati)
                         # mark = True
                 else:
