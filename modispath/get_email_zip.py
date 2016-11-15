@@ -63,7 +63,7 @@ def print_info(msg, indent=0):
                         l_time = value.split(' ')[2]
                         if os.path.exists('time.txt'):
                             time_log = open('time.txt')
-                            if l_time >= time_log.readline():
+                            if l_time > time_log.readline():
                                 mark = True
                             time_log.close()
                         if mark or not os.path.exists('time.txt'):
