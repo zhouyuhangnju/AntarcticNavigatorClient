@@ -31,6 +31,7 @@ from getpath import ModisMap
 import ctypes
 import win32gui
 import ctypes.wintypes
+
 class RECT(ctypes.Structure):
     _fields_ = [('left', ctypes.c_long),
                 ('top', ctypes.c_long),
