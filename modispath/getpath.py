@@ -10,7 +10,7 @@ from datetime import datetime
 
 unit_v = 1.852                   # ship's speed when it sails breaking ice: 1.852km/h
 # interaction input
-threshold = 0.7        # threshold of unreachable place
+threshold = 1        # threshold of unreachable place
 normal_v = 7*unit_v    # ship's normal speed is 7*unit_v
 ice_thresh = 0.3       # tell sea between ice fields
 
