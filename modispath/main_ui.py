@@ -723,7 +723,10 @@ class MainWindow(object):
         for i in xrange(len(self.recent_op_points)):
             v = "经度"+'{:.2f}'.format(self.recent_op_points[i][0])+"，纬度"+'{:.2f}'.format(self.recent_op_points[i][1])
             self.list.insert(tk.END, v)
-        self.list.bind("<Double-Button-1>", self.__event_operation_point)
+        # self.list.bind("<Double-Button-1>", self.__event_operation_point)
+        self.list.bind('<Motion>', self.__event_listbox_motion)
+        self.list.bind("<Button-1>", self.__event_operation_point)
+
         scrollbar.config(command=self.list.yview)
 
         self.label_list = tk.Label(self.frame_info, text='最近增加作业点')
@@ -1077,19 +1080,41 @@ class MainWindow(object):
         else:
             self.__draw_end_point()
 
-    def __event_operation_point(self, event):
-        items = self.list.curselection()
-        # print self.list.get(items)
-        index = items[0]
-        # print index
+    def __event_listbox_motion(self, event):
+        try:
+            items = self.list.curselection()
+            # print self.list.get(items)
+            index = items[0]
+            # print index
 
-        if index < len(self.recent_op_points):
-            lon, lat = self.recent_op_points[index]
-            self.entry_lon.delete(0, 'end')
-            self.entry_lon.insert(0, str('%0.2f'%lon))
-            self.entry_lat.delete(0, 'end')
-            self.entry_lat.insert(0, str('%0.2f'%lat))
-            self.__draw_temp_point()
+            if index < len(self.recent_op_points):
+                lon, lat = self.recent_op_points[index]
+                self.entry_lon.delete(0, 'end')
+                self.entry_lon.insert(0, str('%0.2f'%lon))
+                self.entry_lat.delete(0, 'end')
+                self.entry_lat.insert(0, str('%0.2f'%lat))
+                self.__draw_temp_point()
+        except:
+            pass
+
+
+
+    def __event_operation_point(self, event):
+        try:
+            items = self.list.curselection()
+            # print self.list.get(items)
+            index = items[0]
+            # print index
+
+            if index < len(self.recent_op_points):
+                lon, lat = self.recent_op_points[index]
+                self.entry_lon.delete(0, 'end')
+                self.entry_lon.insert(0, str('%0.2f'%lon))
+                self.entry_lat.delete(0, 'end')
+                self.entry_lat.insert(0, str('%0.2f'%lat))
+                self.__draw_temp_point()
+        except:
+            pass
 
     def __point_frame_input_check(self, event):
         entry = event.widget
@@ -1520,24 +1545,98 @@ class MainWindow(object):
         if polar[0] == None or polar[1] == None:
             # draw latitude lines
             for v in range(-80, -50, 1):
-                line_points = []
-                for j in range(0, jlen, 10):
+                line_points1 = []
+                line_points2 = []
+                for j in range(0, jlen, 1):
                     lat = lat_mat[:, j]
                     i = int(np.fabs(lat - v).argmin())
                     diff = np.fabs(lat[i] - v)
                     if i > 0 and i < ilen-1  and diff < 0.1:
-                        line_points.append((i, j))
+                        if lon_mat[i][j] <= 0:
+                            line_points1.append((i, j, lon_mat[i][j]))
+                        else:
+                            line_points2.append((i,j,lon_mat[i][j]))
+                line_points1=sorted(line_points1,key=lambda line_points1 : line_points1[2])
+                line_points2=sorted(line_points2,key=lambda line_points2 : line_points2[2])
 
-                for i in range(0, len(line_points)-1):
-                    cx, cy = self.__matrixcoor2canvascoor(line_points[i][0], line_points[i][1])
-                    nx, ny = self.__matrixcoor2canvascoor(line_points[i+1][0], line_points[i+1][1])
 
-                    # g = self.canvas.create_line(cx, cy, nx, ny, fill='yellow', width=1.5)
+                # d = []
+                # if len(line_points)==0:
+                #     pass
+                # else:
+                #     print len(line_points)
+                #
+                #     for j in range(len(line_points)):
+                #         for i in range(j+1,len(line_points)):
+                #             d.append((j, i, (line_points[j][0] - line_points[i][0])*(line_points[j][0] - line_points[i][0])+ (line_points[j][1] - line_points[i][1])* (line_points[j][1] - line_points[i][1])))
+                #     d=sorted(d,key=lambda d : d[2])
+                #
+                #
+                # buffer = []
+                # pairbuffer = []
+                # count = 0
+                # draw = 0
+                # while len(d) > 0:
+                #
+                #     temp = []
+                #
+                #     if d[count][0] in buffer and d[count][1] in buffer :
+                #         if buffer.index(d[count][0])-1>=0:
+                #             pv1 = buffer[buffer.index(d[count][0])-1]
+                #         else:
+                #             pv1 = None
+                #         try:
+                #             bv1 = buffer[buffer.index(d[count][0])+1]
+                #         except:
+                #             bv1 = None
+                #         if buffer.index(d[count][1])-1>=0:
+                #             pv2 = buffer[buffer.index(d[count][1])-1]
+                #         else:
+                #             pv2 = None
+                #         try:
+                #             bv2 = buffer[buffer.index(d[count][1])+1]
+                #         except:
+                #             bv2 = None
+                #
+                #
+                #         if (pv1, d[count][0]) in pairbuffer:
+                #             temp.append(pv1)
+                #         if (d[count][0], bv1) in pairbuffer:
+                #             temp.append(bv1)
+                #         if (pv2, d[count][1]) in pairbuffer:
+                #             temp.append(pv2)
+                #         if (d[count][1], bv2) in pairbuffer:
+                #             temp.append(bv2)
+                #
+                #     if d[count][0] in buffer and d[count][1] in buffer or buffer.count(d[count][0]) == 2 or buffer.count(d[count][1]) == 2:
+                #         count = count +1
+                #         if count == len(d):
+                #           break
+                #     else:
+                #         draw = draw + 1
+                #         buffer.append(d[count][0])
+                #         buffer.append(d[count][1])
+                #         pairbuffer.append((d[count][0],d[count][1]))
+
+                for i in range(len(line_points1)-1):
+                    cx, cy = self.__matrixcoor2canvascoor(line_points1[i][0], line_points1[i][1])
+                    nx, ny = self.__matrixcoor2canvascoor(line_points1[i+1][0], line_points1[i+1][1])
+                        # g = self.canvas.create_line(cx, cy, nx, ny, fill='yellow', width=1.5)
                     g = self.canvas.create_line(cx, cy, nx, ny, fill='SeaGreen', width=width)
                     self.tag_graticule.append(g)
-                    if i == len(line_points) - 2:
+                    if i == len(line_points1) - 2:
                         t = self.canvas.create_text(nx-2, ny-1, anchor='se', font=("Purisa",fontsize,'bold'), fill='SeaGreen',
-                                                    text=str(int(round(lat_mat[line_points[i+1][0], line_points[i+1][1]]))))
+                                                    text=str(int(round(lat_mat[line_points1[i+1][0], line_points1[i+1][1]]))))
+                        self.tag_graticule.append(t)
+                for i in range(len(line_points2)-1):
+                    cx, cy = self.__matrixcoor2canvascoor(line_points2[i][0], line_points2[i][1])
+                    nx, ny = self.__matrixcoor2canvascoor(line_points2[i+1][0], line_points2[i+1][1])
+                        # g = self.canvas.create_line(cx, cy, nx, ny, fill='yellow', width=1.5)
+                    g = self.canvas.create_line(cx, cy, nx, ny, fill='SeaGreen', width=width)
+                    self.tag_graticule.append(g)
+                    if i == len(line_points2) - 2:
+                        t = self.canvas.create_text(nx-2, ny-1, anchor='se', font=("Purisa",fontsize,'bold'), fill='SeaGreen',
+                                                    text=str(int(round(lat_mat[line_points2[i+1][0], line_points2[i+1][1]]))))
                         self.tag_graticule.append(t)
 
         '''
