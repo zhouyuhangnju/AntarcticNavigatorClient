@@ -22,22 +22,22 @@ class PointWindow(Frame):
         self.label_blank = Label(self.frame_range, text='')
         self.label_blank.grid(row=0, column=0)
 
-        self.label_leftlon = Label(self.frame_range, text='左上角经度:')
+        self.label_leftlon = Label(self.frame_range, text='西界经度:')
         self.label_leftlon.grid(row=1, column=0, padx=5, pady=5)
         self.entry_leftlon = Entry(self.frame_range, width=8)
         self.entry_leftlon.grid(row=1, column=1, padx=5, pady=5)
 
-        self.label_leftlat = Label(self.frame_range, text='左上角纬度:')
+        self.label_leftlat = Label(self.frame_range, text='北界纬度:')
         self.label_leftlat.grid(row=1, column=2, padx=5, pady=5)
         self.entry_leftlat = Entry(self.frame_range, width=8)
         self.entry_leftlat.grid(row=1, column=3, padx=5, pady=5)
 
-        self.label_rightlon = Label(self.frame_range, text='右下角经度:')
+        self.label_rightlon = Label(self.frame_range, text='东界经度:')
         self.label_rightlon.grid(row=2, column=0, padx=5, pady=5)
         self.entry_rightlon = Entry(self.frame_range, width=8)
         self.entry_rightlon.grid(row=2, column=1, padx=5, pady=5)
 
-        self.label_rightlat = Label(self.frame_range, text='右下角纬度:')
+        self.label_rightlat = Label(self.frame_range, text='南界纬度:')
         self.label_rightlat.grid(row=2, column=2, padx=5, pady=5)
         self.entry_rightlat = Entry(self.frame_range, width=8)
         self.entry_rightlat.grid(row=2, column=3, padx=5, pady=5)
