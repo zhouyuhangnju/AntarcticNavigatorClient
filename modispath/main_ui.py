@@ -851,21 +851,21 @@ class MainWindow(object):
         rightlon = self.__check_input(self.entry_rightlon.get(), True)
         rightlat = self.__check_input(self.entry_rightlat.get(), False)
 
-        pos_text1 = "(" + str(leftlat)
+        pos_text1 = "(" + str(abs(leftlat))
         if leftlat > 0:
-            pos_text1 = pos_text1 + "N " + str(leftlon)
+            pos_text1 = pos_text1 + "N " + str(abs(leftlon))
         else:
-            pos_text1 = pos_text1 + "S " + str(leftlon)
+            pos_text1 = pos_text1 + "S " + str(abs(leftlon))
         if leftlon > 0:
             pos_text1 = pos_text1 + "E)"
         else:
             pos_text1 = pos_text1 + "W)"
 
-        pos_text2 = "(" + str(rightlat)
+        pos_text2 = "(" + str(abs(rightlat))
         if rightlat > 0:
-            pos_text2 = pos_text2 + "N " + str(rightlon)
+            pos_text2 = pos_text2 + "N " + str(abs(rightlon))
         else:
-            pos_text2 = pos_text2 + "S " + str(rightlon)
+            pos_text2 = pos_text2 + "S " + str(abs(rightlon))
         if rightlon > 0:
             pos_text2 = pos_text2 + "E)"
         else:
@@ -1148,7 +1148,7 @@ class MainWindow(object):
         self.__draw_temp_point()
 
     def __event_email_check(self, event):
-        pattern = '^[0-9a-zA-Z_]{0,19}@[0-9a-zA-Z]{1,13}\.[com,cn,net]{1,3}$'
+        pattern = '^(\w)+(\.\w+)*@(\w)+((\.\w+)+)$'
         if self.entry_mail.get() == '':
             return
         if re.match(pattern, self.entry_mail.get()) == None:

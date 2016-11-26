@@ -11,10 +11,11 @@ def send(receiver, content):
     # sender = 'PolarRequestSAR@163.com'
     # passwd = 'PolarEmail1234'
     sender, passwd = mailutil.getemailpsw(4)
+    sender = sender + '@lamda.nju.edu.cn'
 
     msg = MIMEMultipart()
     msg['to'] = receiver
-    msg['from'] = sender+'@lamda.nju.edu.cn'
+    msg['from'] = sender
 
     today = datetime.date.today()
     msg['subject'] = today.strftime('%Y-%m-%d') + '：SAR图请求'
