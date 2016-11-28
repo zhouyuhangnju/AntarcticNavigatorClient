@@ -1354,8 +1354,7 @@ class MainWindow(object):
         self.model = ModisMap(self.prob_mat)
 
         if self.modisimg.size != self.costimg.size:
-            self.__new_code()
-            return 
+            self.__update_files()
 
         assert self.modisimg.size == self.costimg.size
         assert self.prob_mat.shape[0:2] == self.lonlat_mat.shape[0:2]
@@ -1366,9 +1365,6 @@ class MainWindow(object):
 
         return True
 
-    def __new_code(self):
-        self.__update_files()
-        self.__init_models()
 
     # returns (i, j) that lonlat_mat[i, j] == (longitude, latitude)
     # this func is suspected to have a precision problem, leave a todo here.
@@ -2056,20 +2052,23 @@ class MainWindow(object):
                 print filename
         self.__init_models()
         clearfile.clear_raster()
-        # save
-        ee = [self.e1, self.e2, self.e3, self.e4]
-        ss = [e.get() for e in ee]
+        try:
+            # save
+            ee = [self.e1, self.e2, self.e3, self.e4]
+            ss = [e.get() for e in ee]
 
-        # refresh
-        self.__callback_b9_reset()
+            # refresh
+            self.__callback_b9_reset()
 
-        # load
-        for e, s in zip(ee, ss):
-            e.insert(0, s)
-        self.__draw_start_point()
-        self.__draw_end_point()
+            # load
+            for e, s in zip(ee, ss):
+                e.insert(0, s)
+            self.__draw_start_point()
+            self.__draw_end_point()
 
-        sys.stdout.flush()
+            sys.stdout.flush()
+        except:
+            pass
 
     # this function will run as a daemon thread 
     def __refresh_model_regularly(self):        
