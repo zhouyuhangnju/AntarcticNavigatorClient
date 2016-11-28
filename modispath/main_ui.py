@@ -1355,6 +1355,7 @@ class MainWindow(object):
 
         if self.modisimg.size != self.costimg.size:
             self.__new_code()
+            return 
 
         assert self.modisimg.size == self.costimg.size
         assert self.prob_mat.shape[0:2] == self.lonlat_mat.shape[0:2]
