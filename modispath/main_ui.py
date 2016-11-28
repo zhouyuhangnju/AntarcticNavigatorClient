@@ -151,7 +151,6 @@ class MainWindow(object):
         self.is_send_sar = True
         self.is_add_op = True
 
-            
         # now building ui
         # firstly, determining canvas window size by the system screensize
 
@@ -424,9 +423,9 @@ class MainWindow(object):
         self.__rescale(new_factor)
 
     def __callback_b7_genpath(self):
-        if not self.is_gen_path:
-            tkMessageBox.showerror('Error', '存在不合法输入！')
-            return
+        # if not self.is_gen_path:
+        #     tkMessageBox.showerror('Error', '存在不合法输入！')
+        #     return
 
         mark2 = False
         if '' in [self.e1.get(), self.e2.get(), self.e3.get(), self.e4.get(), self.optimize_target.get()]:
@@ -878,9 +877,9 @@ class MainWindow(object):
                 or self.entry_rightlon.get()=='' or self.entry_rightlat.get()=='':
             tkMessageBox.showerror('Error', '输入不完整')
 
-        if not self.is_send_sar:
-            tkMessageBox.showerror('Error', '存在不合法输入！')
-            return
+        # if not self.is_send_sar:
+        #     tkMessageBox.showerror('Error', '存在不合法输入！')
+        #     return
 
         self.canvas.delete(self.tag_left_point)
         self.canvas.delete(self.tag_right_point)
@@ -1983,6 +1982,8 @@ class MainWindow(object):
 
     # check each entry's input
     def __check_input(self, string, is_lon):
+        # check_result = -1
+
         value = -1
 
         pattern1 = '^[+-]?\d{1,3} \d{1,2} \d{1,2} ?$'
@@ -1993,20 +1994,26 @@ class MainWindow(object):
             # print values
             if float(values[1]) >= 60.00 or float(values[1]) < 0.00 or float(values[2]) >= 60.00 or float(values[2]) < 0.00:
                 raise IndexError('Out of range')
+                # check_result = 2
             if is_lon:
                 if float(values[0]) > 179.00:
                     if float(values[1]) > 0.00 and float(values[2]) > 0.00:
                         raise IndexError('Out of range')
+                        # check_result = 2
                     if float(values[1]) > 180.00:
                         raise IndexError('Out of range')
+                        # check_result = 2
                 if float(values[0]) < -179.00:
                     if float(values[1]) > 0.00 and float(values[2]) > 0.00:
                         raise IndexError('Out of range')
+                        # check_result = 2
                     if float(values[1]) < -180.00:
                         raise IndexError('Out of range')
+                        # check_result = 2
             else:
                 if float(values[0]) > 89.00:
                     if float(values[1]) > 0.00 and float(values[2]) > 0.00:
+                        # check_result = 2
                         raise IndexError('Out of range')
                     if float(values[1]) > 90.00:
                         raise IndexError('Out of range')

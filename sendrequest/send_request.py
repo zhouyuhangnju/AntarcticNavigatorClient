@@ -134,10 +134,9 @@ class PointWindow(Frame):
 
 
     def __callback_send_require(self):
-
-        if not self.is_send:
-            tkMessageBox.showerror('Error', '存在不合法输入！')
-            return
+        # if not self.is_send:
+        #     tkMessageBox.showerror('Error', '存在不合法输入！')
+        #     return
 
         receive = 'PolarReceiveReq@lamda.nju.edu.cn'
         # content = 'test'
