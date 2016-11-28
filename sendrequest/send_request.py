@@ -114,10 +114,10 @@ class PointWindow(Frame):
             # entry.delete(0, 'end')
             # tkMessageBox.showerror('Wrong', '经纬度不在范围内')
             if entry.get() != '':
-                entry['bg'] = 'blue'
+                entry['bg'] = 'red'
             self.is_send = False
 
-         else:
+        else:
             entry['bg'] = 'white'
             self.is_send = True
 

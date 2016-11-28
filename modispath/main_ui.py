@@ -1353,8 +1353,10 @@ class MainWindow(object):
 
         self.model = ModisMap(self.prob_mat)
 
+        if self.modisimg.size != self.costimg.size:
+            self.__new_code()
+
         assert self.modisimg.size == self.costimg.size
-        # assert self.iceorcloud_mat.shape == self.prob_mat.shape
         assert self.prob_mat.shape[0:2] == self.lonlat_mat.shape[0:2]
         assert self.prob_mat.shape[0] * beta  == self.modisimg.size[1]
         assert self.prob_mat.shape[1] * beta  == self.modisimg.size[0]
@@ -1363,6 +1365,9 @@ class MainWindow(object):
 
         return True
 
+    def __new_code(self):
+        self.__update_files()
+        self.__init_models()
 
     # returns (i, j) that lonlat_mat[i, j] == (longitude, latitude)
     # this func is suspected to have a precision problem, leave a todo here.
