@@ -5,6 +5,8 @@ from mailutil import getemailpsw
 import send_mail
 class PointWindow(Frame):
     def __init__(self, master):
+        self.is_send = True
+
         Frame.__init__(self, master)
         # self.frame_receive = Frame(master, width=500)
         self.frame_range = Frame(master, width=400)
@@ -50,6 +52,7 @@ class PointWindow(Frame):
         for e in [self.entry_leftlon, self.entry_rightlon, self.entry_leftlat, self.entry_rightlat]:
             e.bind('<FocusOut>',  self.__event_range_input)
             e.bind('<Return>',  self.__event_range_input)
+            e.bind('<Leave>',  self.__event_range_input)
             # e.bind('<FocusOut>', self.__check_input)
             # e.bind('<Return>', self.__check_input)
 
@@ -101,12 +104,22 @@ class PointWindow(Frame):
             #     i, j = self.__find_geocoordinates(lon, lat)
 
         except ValueError:
-            entry.delete(0, 'end')
-            tkMessageBox.showerror('Wrong', '不是合法的输入')
+            # entry.delete(0, 'end')
+            # tkMessageBox.showerror('Wrong', '不是合法的输入')
+            if entry.get() != '':
+                entry['bg'] = 'red'
+            self.is_send = False
 
         except RuntimeError:
-            entry.delete(0, 'end')
-            tkMessageBox.showerror('Wrong', '经纬度不在范围内')
+            # entry.delete(0, 'end')
+            # tkMessageBox.showerror('Wrong', '经纬度不在范围内')
+            if entry.get() != '':
+                entry['bg'] = 'blue'
+            self.is_send = False
+
+         else:
+            entry['bg'] = 'white'
+            self.is_send = True
 
         # draw anyway even if exception
         # if g == gleft:
@@ -121,6 +134,10 @@ class PointWindow(Frame):
 
 
     def __callback_send_require(self):
+
+        if not self.is_send:
+            tkMessageBox.showerror('Error', '存在不合法输入！')
+            return
 
         receive = 'PolarReceiveReq@lamda.nju.edu.cn'
         # content = 'test'

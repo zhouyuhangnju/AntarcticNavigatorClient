@@ -124,9 +124,9 @@ class MainWindow(object):
         self.ice_weight = 0.0
         self.path = []
         self.show_cost = False
-        self.default_zoom_factor = 0.4
+        self.default_zoom_factor = 0.1
         self.zoom_factor= 1.0
-        self.zoom_level = [0.1, 0.2, 0.4, 0.6, 0.8, 1.0, 1.5]    # final static
+        self.zoom_level = [0.025, 0.05, 0.1, 0.15, 0.2, 0.25, 0.375, 0.5, 1.0]   # final static
         self.optimize_target = tk.StringVar()   # control var of om (optionmenu), domain{'', '最便捷路径', '路程与破冰'}
         self.mouse_status = tk.IntVar()         # control var of b0, b1 and b2 (radiobutton group), domain{1, 2, 3}
                                             # self.mouse_status.get() ==0    # drag mouse to move image
@@ -147,6 +147,9 @@ class MainWindow(object):
         # self.tag_query_point = None
         # self.tag_rect = None
         # self.tag_infotext = None
+        self.is_gen_path = True
+        self.is_send_sar = True
+        self.is_add_op = True
 
             
         # now building ui
@@ -232,7 +235,6 @@ class MainWindow(object):
         l3.grid(row=2, column=0, pady=10)
         l4.grid(row=3, column=0, pady=10)
         l5.grid(row=4, column=0, pady=10)
-        
         
         self.e1 = tk.Entry(frame_right, width=10)
         self.e2 = tk.Entry(frame_right, width=10)
@@ -329,6 +331,8 @@ class MainWindow(object):
         for e in [self.e1, self.e2, self.e3, self.e4]:
             e.bind('<FocusOut>', self.__event_entry_input)
             e.bind('<Return>', self.__event_entry_input)
+            # e.bind('<Tab>', self.__event_entry_input)
+            e.bind('<Leave>', self.__event_entry_input)
 
         self.__rescale(self.default_zoom_factor)
 
@@ -420,6 +424,9 @@ class MainWindow(object):
         self.__rescale(new_factor)
 
     def __callback_b7_genpath(self):
+        if not self.is_gen_path:
+            tkMessageBox.showerror('Error', '存在不合法输入！')
+            return
 
         mark2 = False
         if '' in [self.e1.get(), self.e2.get(), self.e3.get(), self.e4.get(), self.optimize_target.get()]:
@@ -556,6 +563,7 @@ class MainWindow(object):
         self.entry_mail.bind('<Tab>', self.__event_email_check)
         self.entry_mail.bind('<FocusOut>', self.__event_email_check)
         self.entry_mail.bind('<Return>', self.__event_email_check)
+        self.entry_mail.bind('<Leave>', self.__event_email_check)
 
         self.label_leftlon = tk.Label(self.frame_range, text='左上角经度:')
         self.label_leftlon.grid(row=0, column=0, padx=5, pady=5)
@@ -580,6 +588,7 @@ class MainWindow(object):
         for e in [self.entry_leftlon, self.entry_leftlat, self.entry_rightlon, self.entry_rightlat]:
             e.bind('<FocusOut>', self.__event_range_input)
             e.bind('<Return>', self.__event_range_input)
+            e.bind('<Leave>', self.__event_range_input)
 
         self.button_send = tk.Button(self.frame_range, width=7, text='发送', command=self.__callback_send_require)
         self.button_send.grid(row=2, column=1, columnspan=2, padx=5, pady=20)
@@ -735,10 +744,11 @@ class MainWindow(object):
         self.entry_lon.bind('<Tab>', self.__point_frame_input_check)
         self.entry_lon.bind('<FocusOut>', self.__point_frame_input_check)
         self.entry_lon.bind('<Return>', self.__point_frame_input_check)
+        self.entry_lon.bind('<Leave>', self.__point_frame_input_check)
 
         self.entry_lat.bind('<Tab>', self.__point_frame_input_check)
         self.entry_lat.bind('<FocusOut>', self.__point_frame_input_check)
-        self.entry_lat.bind('<Return>', self.__point_frame_input_check)
+        self.entry_lat.bind('<Leave>', self.__point_frame_input_check)
 
         scrollbar = tk.Scrollbar(self.frame_list)
         scrollbar.grid(row=0, column=1, sticky='ns')
@@ -867,6 +877,10 @@ class MainWindow(object):
         if self.entry_mail.get()=='' or self.entry_leftlon.get()=='' or self.entry_leftlat.get()=='' \
                 or self.entry_rightlon.get()=='' or self.entry_rightlat.get()=='':
             tkMessageBox.showerror('Error', '输入不完整')
+
+        if not self.is_send_sar:
+            tkMessageBox.showerror('Error', '存在不合法输入！')
+            return
 
         self.canvas.delete(self.tag_left_point)
         self.canvas.delete(self.tag_right_point)
@@ -1104,17 +1118,33 @@ class MainWindow(object):
                 i, j = self.__find_geocoordinates(lon, lat)
 
         except ValueError:
-            entry.delete(0, 'end')
-            tkMessageBox.showerror('Wrong','不是合法的输入')
+            # entry.delete(0, 'end')
+            if entry.get() != "":
+                entry['bg'] = 'red'
+            self.is_gen_path = False
+            # tkMessageBox.showerror('Wrong','不是合法的输入')
 
         except IndexError:
-            entry.delete(0, 'end')
-            tkMessageBox.showerror('Wrong','经纬度不在范围内')
+            # entry.delete(0, 'end')
+            if entry.get() != "":
+                entry['bg'] = 'blue'
+            self.is_gen_path = False
+            # tkMessageBox.showerror('Wrong','经纬度不在范围内')
 
         except RuntimeError:
-            g[0].delete(0, 'end')
-            g[1].delete(0, 'end')
-            tkMessageBox.showerror('Wrong','经纬度不在范围内')
+            # g[0].delete(0, 'end')
+            # g[1].delete(0, 'end')
+            g[0]['bg'] = 'yellow'
+            g[1]['bg'] = 'yellow'
+            self.is_gen_path = False
+            # tkMessageBox.showerror('Wrong','经纬度不在范围内')
+
+        else:
+            entry['bg'] = 'white'
+            if g[0]['bg'] == 'yellow' or g[1]['bg'] == 'yellow':
+                g[0]['bg'] = 'white'
+                g[1]['bg'] = 'white'
+            self.is_gen_path = True
 
         # draw anyway even if exception
         if g == gstart:
@@ -1175,17 +1205,33 @@ class MainWindow(object):
                 i, j = self.__find_geocoordinates(lon, lat)
 
         except ValueError:
-            entry.delete(0, 'end')
-            tkMessageBox.showerror('Wrong','不是合法的输入')
+            # entry.delete(0, 'end')
+            # tkMessageBox.showerror('Wrong','不是合法的输入')
+            if entry.get() != '':
+                entry['bg'] = 'red'
+            self.is_add_op = False
 
         except IndexError:
-            entry.delete(0, 'end')
-            tkMessageBox.showerror('Wrong','经纬度不在范围内')
+            # entry.delete(0, 'end')
+            # tkMessageBox.showerror('Wrong','经纬度不在范围内')
+            if entry.get() != '':
+                entry['bg'] = 'blue'
+            self.is_add_op = False
 
         except RuntimeError:
-            self.entry_lon.delete(0, 'end')
-            self.entry_lat.delete(0, 'end')
-            tkMessageBox.showerror('Wrong','经纬度不在范围内')
+            # self.entry_lon.delete(0, 'end')
+            # self.entry_lat.delete(0, 'end')
+            # tkMessageBox.showerror('Wrong','经纬度不在范围内')
+            self.entry_lon['bg'] = 'yellow'
+            self.entry_lat['bg'] = 'yellow'
+            self.is_add_op = False
+
+        else:
+            entry['bg'] = 'white'
+            if self.entry_lon['bg'] == 'yellow' or self.entry_lat['bg'] == 'yellow':
+                self.entry_lon['bg'] = 'white'
+                self.entry_lat['bg'] = 'white'
+            self.is_add_op = True
 
         self.__draw_temp_point()
 
@@ -1194,8 +1240,13 @@ class MainWindow(object):
         if self.entry_mail.get() == '':
             return
         if re.match(pattern, self.entry_mail.get()) == None:
-            self.entry_mail.delete(0, 'end')
-            tkMessageBox.showerror('Wrong','邮箱地址不合法')
+            # self.entry_mail.delete(0, 'end')
+            # tkMessageBox.showerror('Wrong','邮箱地址不合法')
+            self.entry_mail['bg'] = 'red'
+            self.is_send_sar = False
+        else:
+            self.entry_mail['bg'] = 'white'
+            self.is_send_sar = True
 
     def __event_range_input(self, event):
         entry = event.widget
@@ -1219,17 +1270,33 @@ class MainWindow(object):
                 i, j = self.__find_geocoordinates(lon, lat)
 
         except ValueError:
-            entry.delete(0, 'end')
-            tkMessageBox.showerror('Wrong','不是合法的输入')
+            # entry.delete(0, 'end')
+            if entry.get() != "":
+                entry['bg'] = 'red'
+            self.is_send_sar = False
+            # tkMessageBox.showerror('Wrong','不是合法的输入')
 
         except IndexError:
-            entry.delete(0, 'end')
-            tkMessageBox.showerror('Wrong','经纬度不在范围内')
+            # entry.delete(0, 'end')
+            if entry.get() != "":
+                entry['bg'] = 'blue'
+            self.is_send_sar = False
+            # tkMessageBox.showerror('Wrong','经纬度不在范围内')
 
         except RuntimeError:
-            g[0].delete(0, 'end')
-            g[1].delete(0, 'end')
-            tkMessageBox.showerror('Wrong','经纬度不在范围内')
+            # g[0].delete(0, 'end')
+            # g[1].delete(0, 'end')
+            g[0]['bg'] = 'yellow'
+            g[1]['bg'] = 'yellow'
+            self.is_send_sar = False
+            # tkMessageBox.showerror('Wrong','经纬度不在范围内')
+
+        else:
+            entry['bg'] = 'white'
+            if g[0]['bg'] == 'yellow' or g[1]['bg'] == 'yellow':
+                g[0]['bg'] = 'white'
+                g[1]['bg'] = 'white'
+            self.is_send_sar = True
 
         # draw anyway even if exception
         if g == gleft:
@@ -1265,7 +1332,7 @@ class MainWindow(object):
 
         self.modisimgfile = modisimgfile
 
-        beta = 5
+        beta = 20
 
         fprob = open(probfile,'rb')
         flonlat = open(lonlatfile, 'rb')
@@ -1346,7 +1413,7 @@ class MainWindow(object):
 
         # do rescaling works
         self.zoom_factor = new_factor
-        self.zoom_text.set('%d' % (new_factor * 100) + '%')
+        self.zoom_text.set('%d' % (new_factor * 400) + '%')
 
         img = self.modisimg
         if self.show_cost:
@@ -1884,7 +1951,7 @@ class MainWindow(object):
         assert 0 <= x < self.imtk.width()
         assert 0 <= y < self.imtk.height()
 
-        beta = 5
+        beta = 20
 
         i = int((y / self.zoom_factor) / beta)  # int division
         j = int((x / self.zoom_factor) / beta)
@@ -1902,7 +1969,7 @@ class MainWindow(object):
         assert 0 <= i < self.prob_mat.shape[0]
         assert 0 <= j < self.prob_mat.shape[1]
 
-        beta = 5
+        beta = 20
 
         x = int(j * beta * self.zoom_factor)
         y = int(i * beta * self.zoom_factor)
