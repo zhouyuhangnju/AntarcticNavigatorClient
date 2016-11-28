@@ -144,9 +144,9 @@ class MainWindow(object):
         self.tag_end_point = None
         self.tag_left_point = None
         self.tag_right_point = None
-        self.tag_query_point = None
-        self.tag_rect = None
-        self.tag_infotext = None
+        # self.tag_query_point = None
+        # self.tag_rect = None
+        # self.tag_infotext = None
 
             
         # now building ui
@@ -155,6 +155,8 @@ class MainWindow(object):
         basic_size = (master.winfo_screenheight() / 100) * 100 - 150
         basic_size = min(850, max(600, basic_size)) # 600 650 750 850
 
+        self.basic_size = basic_size
+
         # then, 3 main frames
         frame_left_top = tk.Frame(master, width=basic_size, height=basic_size)
         frame_left_bottom = tk.Frame(master, width=basic_size, height=50)
@@ -162,6 +164,11 @@ class MainWindow(object):
         frame_left_top.grid(row=0, column=0, padx=2, pady=2)
         frame_left_bottom.grid(row=1, column=0)
         frame_right.grid(row=0, column=1, rowspan=2, padx=1, pady=2)
+
+        # subframe = tk.Frame(frame_left_top)
+        # subframe.pack(side='bottom', fill='x', expand=False)
+        # sublabel = tk.Label(subframe, text='Bottom Left')
+        # sublabel.pack(side='left')
 
         # building frame_left_top
         self.imtk = ImageTk.PhotoImage(self.modisimg)
@@ -187,7 +194,7 @@ class MainWindow(object):
         b0 = tk.Radiobutton(frame_left_bottom, text="默认", variable=self.mouse_status, value=0)
         b1 = tk.Radiobutton(frame_left_bottom, text="设置起点", variable=self.mouse_status, value=1)
         b2 = tk.Radiobutton(frame_left_bottom, text="设置终点", variable=self.mouse_status, value=2)
-        br = tk.Radiobutton(frame_left_bottom, text="显示信息", variable=self.mouse_status, value=3)
+        # br = tk.Radiobutton(frame_left_bottom, text="显示信息", variable=self.mouse_status, value=3)
         b3 = tk.Button(frame_left_bottom, text='显示/隐藏热力图', command=self.__callback_b3_showhide_cost)
         b4 = tk.Button(frame_left_bottom, text='显示/隐藏经纬网', command=self.__callback_b4_showhide_graticule)
         b5 = tk.Button(frame_left_bottom, text='-', width=2, command=self.__callback_b5_zoomout)
@@ -195,12 +202,15 @@ class MainWindow(object):
         b0.grid(row=0, column=0)
         b1.grid(row=0, column=1)
         b2.grid(row=0, column=2)
-        br.grid(row=0, column=3)
-        b3.grid(row=0, column=4)
-        b4.grid(row=0, column=5)    # a blank label between column 4 and 6
-        b5.grid(row=0, column=6)
-        b6.grid(row=0, column=8)    # a scale label between column 6 and 8
+        # br.grid(row=0, column=3)
+        b3.grid(row=0, column=3)
+        b4.grid(row=0, column=4)    # a blank label between column 4 and 6
+        b5.grid(row=0, column=5)
+        b6.grid(row=0, column=7)    # a scale label between column 6 and 8
         # b_k.grid(row=0, column=5)
+
+        b9 = tk.Button(frame_left_bottom, command=self.__callback_b9_reset, text='复位')
+        b9.grid(row=0, column=8, columnspan=2, padx=30)
 
         # blank = tk.Label(frame_left_bottom)
         # blank.grid(row=0, column=5, padx=40)
@@ -208,7 +218,7 @@ class MainWindow(object):
         self.zoom_text = tk.StringVar()
         self.zoom_text.set('%d' % (self.zoom_factor * 100) + '%')
         scale_label = tk.Label(frame_left_bottom, textvariable = self.zoom_text, width=6)
-        scale_label.grid(row=0, column=7)
+        scale_label.grid(row=0, column=6)
 
 
         # building frame_right
@@ -217,11 +227,11 @@ class MainWindow(object):
         l3 = tk.Label(frame_right, text='终点经度')
         l4 = tk.Label(frame_right, text='终点纬度')
         l5 = tk.Label(frame_right, text='最小间距')
-        l1.grid(row=0, column=0, pady=15)
-        l2.grid(row=1, column=0, pady=15)
-        l3.grid(row=2, column=0, pady=15)
-        l4.grid(row=3, column=0, pady=15)
-        l5.grid(row=4, column=0, pady=15)
+        l1.grid(row=0, column=0, pady=10)
+        l2.grid(row=1, column=0, pady=10)
+        l3.grid(row=2, column=0, pady=10)
+        l4.grid(row=3, column=0, pady=10)
+        l5.grid(row=4, column=0, pady=10)
         
         
         self.e1 = tk.Entry(frame_right, width=10)
@@ -247,7 +257,7 @@ class MainWindow(object):
         # blank.grid(row=5)
 
         l6 = tk.Label(frame_right, text='考虑因素')
-        l6.grid(row=6, column=0, pady=15)
+        l6.grid(row=6, column=0, pady=10)
 
         option_list = ['最便捷路径', '路程与破冰']
         om = tk.OptionMenu(frame_right, self.optimize_target, *option_list, command=self.__callback_optionchange)   # callback to auto show/hide sc&sct
@@ -257,7 +267,7 @@ class MainWindow(object):
         frame_temp = tk.Frame(frame_right)
         frame_temp.grid(row=7, column=0, columnspan=2)
 
-        self.sc = tk.Scale(frame_temp, from_=0, to=1, resolution=0.01, width=11, length=120, orient=tk.HORIZONTAL)
+        self.sc = tk.Scale(frame_temp, from_=0, to=4, resolution=0.01, width=11, length=120, orient=tk.HORIZONTAL)
         self.sct = tk.Label(frame_temp, text='更短路径   更少破冰', font=('Purisa', 9))
         self.sc.grid(row=0, column=1)
         self.sct.grid(row=1, column=1)
@@ -272,16 +282,18 @@ class MainWindow(object):
 
 
         b7 = tk.Button(frame_right, command=self.__callback_b7_genpath, text='生成路径')
-        b7.grid(row=9, column=0, columnspan=2, pady=15)
+        b7.grid(row=9, column=0, columnspan=1, pady=10)
+        b_hp = tk.Button(frame_right, command=self.__callback_bhp_hidepath, text='隐藏路径')
+        b_hp.grid(row=9, column=1, columnspan=1, pady=10)
 
         # blank = tk.Label(frame_right, height=3)
         # blank.grid(row=10)
 
         b_print = tk.Button(frame_right, command=self.__callback_print_trace, text='打印路径')
-        b_print.grid(row=10, column=0, columnspan=2, pady=15)
+        b_print.grid(row=10, column=0, columnspan=2, pady=10)
 
         b_sa = tk.Button(frame_right, command=self.__callback_sar_send, text='请求SAR图')
-        b_sa.grid(row=11, column=0, columnspan=2, pady=15)
+        b_sa.grid(row=11, column=0, columnspan=2, pady=10)
 
         # row 11-19 is empty here for adding widget in future
 
@@ -298,10 +310,12 @@ class MainWindow(object):
         #b8.grid(row=22, column=0, columnspan=2, pady=20)
 
         b_re = tk.Button(frame_right, command=self.__update_files, text='更新')
-        b_re.grid(row=12, column=0, columnspan=2, pady=15)
+        b_re.grid(row=12, column=0, columnspan=2, pady=10)
 
-        b9 = tk.Button(frame_right, command=self.__callback_b9_reset, text='复位')
-        b9.grid(row=13, column=0, columnspan=2, pady=15)
+        self.message_var = tk.StringVar()
+        self.message_var.set('')
+        mess = tk.Message(frame_right, textvariable=self.message_var, relief=tk.RAISED)
+        mess.grid(row=13, column=0, columnspan=2, pady=10)
 
         # ui widget code ends
 
@@ -430,10 +444,11 @@ class MainWindow(object):
             mark = 0
         elif target == u'路程与破冰':
             mark = 1
-            if self.ice_weight == 0.0:
-                ratio = float(self.sc.get())
-            else:
-                ratio = self.ice_weight
+            ratio = float(self.sc.get())
+            # if self.ice_weight == 0.0:
+            #     ratio = float(self.sc.get())
+            # else:
+            #     ratio = self.ice_weight
 
         # assert 0 <= ratio <= 1
 
@@ -494,7 +509,12 @@ class MainWindow(object):
             end = self.__find_geocoordinates(self.current_op_points[-1][0], self.current_op_points[-1][1])
 
         # self.current_op_points = []
-        self.__draw_diagram(start, end, path)
+        # self.__draw_diagram(start, end, path)
+
+    def __callback_bhp_hidepath(self):
+        if self.tag_path != []:
+            [self.canvas.delete(p) for p in self.tag_path]
+            self.tag_path = []
 
     # todo
     def __callback_print_trace(self):
@@ -611,20 +631,21 @@ class MainWindow(object):
         # self.tag_operation_point = []
         self.tag_start_point = None
         self.tag_end_point = None
-        self.tag_query_point = None
+        # self.tag_query_point = None
         self.tag_temp_point = None
-        self.tag_rect = None
-        self.tag_infotext = None
+        # self.tag_rect = None
+        # self.tag_infotext = None
         self.tag_path = []
 
         self.__rescale(self.default_zoom_factor)
 
     def __callback_b10_minus(self):
         ratio = float(self.sc.get())
-        if self.ice_weight > 1.0:
-            self.ice_weight = self.ice_weight - 0.5
-            tkMessageBox.showinfo("Info", "最少破冰权值为%.2f"%self.ice_weight)
-        elif ratio == 0.0:
+        # if self.ice_weight > 1.0:
+        #     self.ice_weight = self.ice_weight - 0.5
+        #     tkMessageBox.showinfo("Info", "最少破冰权值为%.2f"%self.ice_weight)
+        # elif ratio == 0.0:
+        if ratio == 0.0:
             tkMessageBox.showinfo("Info", "已达到最小值0.0，不可再减小！")
         else:
             ratio = ratio - 0.01
@@ -632,22 +653,27 @@ class MainWindow(object):
 
     def __callback_b11_add(self):
         ratio = float(self.sc.get())
-        if ratio < 1.0:
-            self.ice_weight = 0
-        if self.ice_weight == 4.0:
-            tkMessageBox.showinfo("Info", "最少破冰权值为%.2f，不可再增加！"%self.ice_weight)
-            return
-        if self.ice_weight >= 1.0:
-            self.ice_weight = self.ice_weight + 0.5
-            tkMessageBox.showinfo("Info", "最少破冰权值为%.2f"%self.ice_weight)
+        if ratio == 4.0:
+            tkMessageBox.showinfo("Info", "已达到最大值4.0，不可再增加！")
         else:
             ratio = ratio + 0.01
             self.sc.set(ratio)
-            if ratio == 1.0:
-                self.ice_weight = 1.0
-            elif ratio > 1.0:
-                self.ice_weight = 1.5
-                tkMessageBox.showinfo("Info", "最少破冰权值为%.2f"%self.ice_weight)
+        # if ratio < 1.0:
+        #     self.ice_weight = 0
+        # if self.ice_weight == 4.0:
+        #     tkMessageBox.showinfo("Info", "最少破冰权值为%.2f，不可再增加！"%self.ice_weight)
+        #     return
+        # if self.ice_weight >= 1.0:
+        #     self.ice_weight = self.ice_weight + 0.5
+        #     tkMessageBox.showinfo("Info", "最少破冰权值为%.2f"%self.ice_weight)
+        # else:
+        #     ratio = ratio + 0.01
+        #     self.sc.set(ratio)
+        #     if ratio == 1.0:
+        #         self.ice_weight = 1.0
+        #     elif ratio > 1.0:
+        #         self.ice_weight = 1.5
+        #         tkMessageBox.showinfo("Info", "最少破冰权值为%.2f"%self.ice_weight)
 
     def __callback_optionchange(self, option):
 
@@ -896,7 +922,8 @@ class MainWindow(object):
 
         status = self.mouse_status.get()
 
-        if status == 0 or status == 3:     # normal
+        # if status == 0 or status == 3:     # normal
+        if status == 0:     # normal
             canvas.scan_mark(event.x, event.y)
 
         elif status == 1:   # click to set starting point
@@ -978,66 +1005,81 @@ class MainWindow(object):
     def __event_canvas_motion(self, event):
         canvas = event.widget
 
-        if self.mouse_status.get() == 3:
-            x, y = int(canvas.canvasx(event.x)), int(canvas.canvasy(event.y))     # x y is canvas coordinates
+        # if self.mouse_status.get() == 3:
+        x, y = int(canvas.canvasx(event.x)), int(canvas.canvasy(event.y))     # x y is canvas coordinates
 
-            if x <= 0 or x >= self.imtk.width() or y <= 0 or y >= self.imtk.height():
-                return
+        if x <= 0 or x >= self.imtk.width() or y <= 0 or y >= self.imtk.height():
+            return
 
-            if self.tag_query_point != None:
-                self.canvas.delete(self.tag_query_point)
-                self.canvas.delete(self.tag_rect)
-                self.canvas.delete(self.tag_infotext)
-                self.tag_query_point = self.tag_rect = self.tag_infotext = None
-                return
+        # if self.tag_query_point != None:
+        #     self.canvas.delete(self.tag_query_point)
+        #     # self.canvas.delete(self.tag_rect)
+        #     self.canvas.delete(self.tag_infotext)
+        #     self.tag_query_point = self.tag_infotext = None
+        #     # self.tag_rect = None
+        #     return
 
-            i, j = self.__canvascoor2matrixcoor(x, y)
+        i, j = self.__canvascoor2matrixcoor(x, y)
 
-            lon = self.lonlat_mat[i, j][0]
-            lat = self.lonlat_mat[i, j][1]
-            prob = self.prob_mat[i, j]
-            mask = self.ice_mat[i, j]
+        lon = self.lonlat_mat[i, j][0]
+        lat = self.lonlat_mat[i, j][1]
+        prob = self.prob_mat[i, j]
+        mask = self.ice_mat[i, j]
 
-            areatext = '浮冰面积小于'
-            if prob[2] > 0.3:
-                areatext = areatext + '{:.2f}'.format(prob[2]*25) + '平方公里'
-            else:
-                areatext = areatext + '{:.2f}'.format(prob[1]*25) + '平方公里'
+        areatext = '浮冰面积<'
+        if prob[2] > 0.3:
+            areatext = areatext + '{:.2f}'.format(prob[2]*25) + 'km2'
+        else:
+            areatext = areatext + '{:.2f}'.format(prob[1]*25) + 'km2'
 
-            text_cotent = '经度: %.2f, 纬度: %.2f'%(lon, lat) + '\n' + \
-                '海: %.4f'%prob[0] + '\n' + \
-                '薄冰薄云: %.4f'%prob[1] + '\n' + \
-                '厚冰厚云: %.4f'%prob[2]
+        text_cotent = '海: %.4f'%prob[0] + '\n' + '薄冰/云: %.4f'%prob[1] + '\n' + '厚冰/云: %.4f'%prob[2]
 
-            # print mask
+        # print mask
 
-            if mask:
-                text_cotent = text_cotent + '(厚冰)'
-            else:
-                text_cotent = text_cotent + '(厚云)'
+        if mask:
+            text_cotent = text_cotent + '(厚冰)'
+        else:
+            text_cotent = text_cotent + '(厚云)'
 
-            text_cotent = text_cotent + '\n' + areatext
+        text_cotent = text_cotent + '\n' + areatext
 
-            x_offset, y_offset = 220, 90
+        postion = ''
+        if lat > 0:
+            postion = postion + '(%.2f °S'%abs(lat)
+        else:
+            postion = postion + '(%.2f °N'%abs(lat)
 
-            if event.x >= int(self.canvas['width']) - x_offset:
-                x_offset = -x_offset
-            if event.y >= int(self.canvas['height']) - y_offset:
-                y_offset = -y_offset
+        if lon > 0:
+            postion = postion + ', %.2f °E)'%abs(lon)
+        else:
+            postion = postion + ', %.2f °W)'%abs(lon)
 
-            self.tag_query_point = self.canvas.create_oval(x-5, y-5, x+5, y+5, fill='green')
-            self.tag_rect = self.canvas.create_rectangle(x, y, x+x_offset, y+y_offset, outline="grey", fill="WhiteSmoke")
-            self.tag_infotext = self.canvas.create_text( min(x, x+x_offset), min(y, y+y_offset)+45, anchor='w', font=("Purisa", 11), text=text_cotent)
+        # text_cotent = text_cotent + '\n' + postion
+        text_cotent = postion + '\n' + text_cotent
+
+        # x_offset, y_offset = 220, 90
+        #
+        # if event.x >= int(self.canvas['width']) - x_offset:
+        #     x_offset = -x_offset
+        # if event.y >= int(self.canvas['height']) - y_offset:
+        #     y_offset = -y_offset
+
+        self.message_var.set(text_cotent)
+        # self.tag_query_point = self.canvas.create_oval(x-5, y-5, x+5, y+5, fill='green')
+        # self.tag_rect = self.canvas.create_rectangle(x, y, x+x_offset, y+y_offset, outline="grey", fill="WhiteSmoke")
+        # self.tag_infotext = self.canvas.create_text(5, self.basic_size-5, anchor='w', font=("Purisa", 6), text=text_cotent)
 
     def __event_canvas_leave(self, event):
-        canvas = event.widget
-
-        if self.mouse_status.get() == 3:
-            if self.tag_query_point != None:
-                self.canvas.delete(self.tag_query_point)
-                self.canvas.delete(self.tag_rect)
-                self.canvas.delete(self.tag_infotext)
-                self.tag_query_point = self.tag_rect = self.tag_infotext = None
+        # canvas = event.widget
+        #
+        # if self.mouse_status.get() == 3:
+        #     if self.tag_query_point != None:
+        #         self.canvas.delete(self.tag_query_point)
+        #         # self.canvas.delete(self.tag_rect)
+        #         self.canvas.delete(self.tag_infotext)
+        #         self.tag_query_point = self.tag_infotext = None
+        #         # self.tag_rect = None
+        pass
 
     def __event_entry_input(self, event):
 
@@ -1319,7 +1361,8 @@ class MainWindow(object):
         self.__draw_end_point()
         self.__draw_path()
         self.__draw_temp_point()
-        self.tag_query_point = self.tag_rect = self.tag_infotext = None
+        # self.tag_query_point = self.tag_infotext = None
+        # self.tag_rect = None
 
         if self.tag_operation_point != []:
             self.__draw_operation_point()
