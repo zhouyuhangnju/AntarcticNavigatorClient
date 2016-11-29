@@ -1058,9 +1058,9 @@ class MainWindow(object):
 
         postion = ''
         if lat > 0:
-            postion = postion + '(%.2f °S'%abs(lat)
-        else:
             postion = postion + '(%.2f °N'%abs(lat)
+        else:
+            postion = postion + '(%.2f °S'%abs(lat)
 
         if lon > 0:
             postion = postion + ', %.2f °E)'%abs(lon)
