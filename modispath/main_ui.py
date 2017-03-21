@@ -1670,7 +1670,6 @@ class MainWindow(object):
                 line_points1=sorted(line_points1,key=lambda line_points1 : line_points1[2])
                 line_points2=sorted(line_points2,key=lambda line_points2 : line_points2[2])
 
-
                 # d = []
                 # if len(line_points)==0:
                 #     pass
