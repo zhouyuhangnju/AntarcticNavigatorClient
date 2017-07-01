@@ -1,5 +1,6 @@
 /modispath/data/
 /modispath/download/
+/modispath/time.txt
 psw.txt
 *.pyc
 *.jpg
