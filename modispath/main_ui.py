@@ -1655,7 +1655,7 @@ class MainWindow(object):
 
         if polar[0] == None or polar[1] == None:
             # draw latitude lines
-            for v in range(50, 80, 1):
+            for v in range(50, 90, 1):
                 line_points1 = []
                 line_points2 = []
                 for j in range(0, jlen, 1):
