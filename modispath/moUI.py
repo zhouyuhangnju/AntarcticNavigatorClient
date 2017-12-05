@@ -144,7 +144,7 @@ class MainWindow(object):
         frame_control = tk.Frame(frame1, width=control_wid, height=basic_h-title_h-south_size)
         frame_control.grid(row=1, column=0, rowspan=2, padx=1, pady=15)
 
-        south_file = 'northpole.jpg'
+        south_file = 'southpole.jpg'
         south_image = Image.open(south_file)
         south_image = south_image.resize((south_size, south_size))
         self.south_imtk = ImageTk.PhotoImage(south_image)
@@ -1294,20 +1294,22 @@ class MainWindow(object):
         lon = self.lonlat_mat[i, j][0]
         lat = self.lonlat_mat[i, j][1]
         prob = self.prob_mat[i, j]
-        mask = self.ice_mat[i, j]
+        # mask = self.ice_mat[i, j]
 
         areatext = '估计浮冰面积<'
-        if prob[2] > 0.3:
-            areatext = areatext + '{:.2f}'.format(prob[2]*25) + 'km2'
-        else:
-            areatext = areatext + '{:.2f}'.format(prob[1]*25) + 'km2'
+        areatext = areatext + '{:.2f}'.format(prob[2] * 25) + 'km2'
+        # if prob[2] > 0.3:
+        #     areatext = areatext + '{:.2f}'.format(prob[2]*25) + 'km2'
+        # else:
+        #     areatext = areatext + '{:.2f}'.format(prob[1]*25) + 'km2'
 
-        text_cotent = '海的概率: %.4f'%prob[0] + '\n' + '薄冰/云的概率: %.4f'%prob[1] + '\n' + '厚冰/云的概率: %.4f'%prob[2]
+        # text_cotent = '海的概率: %.4f'%prob[0] + '\n' + '薄冰/云的概率: %.4f'%prob[1] + '\n' + '厚冰/云的概率: %.4f'%prob[2]
+        text_cotent =  '冰的概率: %.4f' % prob[2]
 
-        if mask:
-            text_cotent = text_cotent + '(厚冰)'
-        else:
-            text_cotent = text_cotent + '(厚云)'
+        # if mask:
+        #     text_cotent = text_cotent + '(厚冰)'
+        # else:
+        #     text_cotent = text_cotent + '(厚云)'
 
         text_cotent = text_cotent + '\n' + areatext
 
@@ -1730,6 +1732,221 @@ class MainWindow(object):
             nx_trace, ny_trace = self.__matrixcoor2canvascoor_trace(ni_trace, nj_trace)
             self.trace_tag_path.append(self.trace_canvas.create_line(cx_trace, cy_trace, nx_trace, ny_trace, fill='#7FFF00', width=width_trace))
 
+    # def __draw_graticule(self):
+    #
+    #     # According to new data, the modis image is transformed by zenithal projection.
+    #     # We can assume that longitude is straight line, latitude is circle (this is assured by zenithal projection)
+    #     # and the polar point should be seated in the image (this is not)
+    #     # Otherwise, we can use code in old system to draw graticule which can deal with twisted graticule
+    #
+    #     # This function cannot deal with situation that polar is not within the image
+    #     # Todo :
+    #     #   1. To improve accuracy, use canvas coordinates directly (like drawing latitude) to draw longitude
+    #     #   2. Deal with sitution that polar is not within the image
+    #
+    #     for i in xrange(0, len(self.tag_graticule)):
+    #         self.modis_canvas.delete(self.tag_graticule[i])
+    #     self.tag_graticule = []
+    #
+    #     if self.cost_tag_graticule != []:
+    #         for i in xrange(0, len(self.cost_tag_graticule)):
+    #             self.cost_canvas.delete(self.cost_tag_graticule[i])
+    #         self.cost_tag_graticule = []
+    #
+    #     lon_mat = self.lonlat_mat[:, :, 0]
+    #     lat_mat = self.lonlat_mat[:, :, 1]
+    #     ilen, jlen = lat_mat.shape
+    #
+    #     polar = [None, None]  # lat_mat[polar] is 90N or 90S
+    #
+    #     width = 2
+    #     fontsize = 11
+    #     if self.zoom_factor <= 0.6:
+    #         width = 1
+    #         fontsize = 10
+    #     if self.zoom_factor <= 0.2:
+    #         width = 1
+    #         fontsize = 9
+    #
+    #     # find vertical longitude line 180 or 0
+    #     j_list = []
+    #     for i in range(0, ilen, 10):
+    #         for v in [0, 180]:
+    #             j = int(np.fabs(lon_mat[i, :] - v).argmin())
+    #             diff = np.fabs(lon_mat[i, j] - v)
+    #             if diff < 0.5:
+    #                 j_list.append(int(j))
+    #
+    #     if j_list != []: # founded
+    #         target_j = Counter(j_list).most_common(1)[0][0] # mode of j_list
+    #         x1, y1 = self.__matrixcoor2canvascoor(0, target_j)
+    #         x2, y2 = self.__matrixcoor2canvascoor(ilen-1, target_j)
+    #         g1 = self.modis_canvas.create_line(x1, y1, x2, y2, fill='SeaGreen', width=width)
+    #         t1 = self.modis_canvas.create_text(x2-2, y2-1, anchor='se', font=("Purisa",fontsize), fill='SeaGreen', text=str(int(round(lon_mat[ilen-1, target_j]))))
+    #         self.tag_graticule.append(g1)
+    #         self.tag_graticule.append(t1)
+    #         if self.img_num == 0:
+    #             g2 = self.cost_canvas.create_line(x1, y1, x2, y2, fill='SeaGreen', width=width)
+    #             t2 = self.cost_canvas.create_text(x2-2, y2-1, anchor='se', font=("Purisa",fontsize), fill='SeaGreen', text=str(int(round(lon_mat[ilen-1, target_j]))))
+    #             self.cost_tag_graticule.append(g2)
+    #             self.cost_tag_graticule.append(t2)
+    #
+    #         polar[1] = int(target_j)
+    #
+    #     # draw other longitude lines, such as 150(-30), 120(-60) etc
+    #     interv = 3
+    #     for v in range(0+interv, 180, interv):
+    #
+    #         self.modis_canvas.update_idletasks()
+    #         self.cost_canvas.update_idletasks()
+    #
+    #         # draw line v(-180+v)
+    #         # search by column, for every column j find i that lon[i, j] == v (or -180+v)
+    #         # draw a line between (i0, j0) and (in, jn)
+    #         # notice that vertical line cannot be drawn by this way
+    #
+    #         i_list, j_list = [], []
+    #         for j in range(0, jlen, 2):
+    #             for t in [v, -180+v]:
+    #                 i = int(np.fabs(lon_mat[:, j] - t).argmin())
+    #                 diff = np.fabs(lon_mat[i, j] - t)
+    #                 if diff < 0.5:
+    #                     i_list.append(i)
+    #                     j_list.append(j)
+    #
+    #         if i_list != []:
+    #             x1, y1 = self.__matrixcoor2canvascoor(i_list[0], j_list[0])
+    #             x2, y2 = self.__matrixcoor2canvascoor(i_list[-1], j_list[-1])
+    #             g1 = self.modis_canvas.create_line(x1, y1, x2, y2, fill='SeaGreen', width=width)
+    #             t1 = self.modis_canvas.create_text(x2-2, y2-1, anchor='se', font=("Purisa",fontsize, 'bold'), fill='SeaGreen', text=str(int(round(lon_mat[i_list[-1], j_list[-1]]))))
+    #             self.tag_graticule.append(g1)
+    #             self.tag_graticule.append(t1)
+    #             if self.img_num == 0:
+    #                 g2 = self.cost_canvas.create_line(x1, y1, x2, y2, fill='SeaGreen', width=width)
+    #                 t2 = self.cost_canvas.create_text(x2-2, y2-1, anchor='se', font=("Purisa",fontsize, 'bold'), fill='SeaGreen', text=str(int(round(lon_mat[i_list[-1], j_list[-1]]))))
+    #                 self.cost_tag_graticule.append(g2)
+    #                 self.cost_tag_graticule.append(t2)
+    #
+    #             if v == 90:
+    #                 polar[0] = int(i_list[0])   # 90 longitude line is totally horizontal
+    #
+    #     if polar[0] != None and polar[1] != None:
+    #         # print polar[0], polar[1]
+    #         assert 0 <= polar[0] < ilen
+    #         assert 0 <= polar[1] < jlen
+    #
+    #         # draw latitude circles
+    #         # notice that all latitude circles center at polar
+    #         # so once found the center and radius, then the circle can be drawn
+    #         interv = 1
+    #         for v in range(0, 90, interv):
+    #
+    #             self.modis_canvas.update_idletasks()
+    #             self.cost_canvas.update_idletasks()
+    #
+    #             t = v if lat_mat[0, 0] > 0 else -v
+    #
+    #             # find a point (i, j) on the circle that lat_mat[i, j] = t
+    #             i = polar[0]
+    #             j = int(np.fabs(lat_mat[i, :] - t).argmin())    # first, try to find (i, j) that i equals polar[0]
+    #             if np.fabs(lat_mat[i, j] - t) > 0.5:            # if not found, try (i, j) that j equals ploar[1]
+    #                 j = polar[1]
+    #                 i = int(np.fabs(lat_mat[:, j] - t).argmin())
+    #                 if np.fabs(lat_mat[i, j] - t) > 0.5:
+    #                     continue    # also not found , no more work to draw this latitude circle
+    #
+    #             # from now on, use canvas coordinates instead of matrix coordinates to improve accuracy
+    #             x0, y0 = self.__matrixcoor2canvascoor(polar[0], polar[1])   # canvas coordinates of the center
+    #             x1, y1 = self.__matrixcoor2canvascoor(i, j)                 # canvas coordinates of (i, j)
+    #             radius = ((x1-x0)**2 + (y1-y0)**2)**0.5
+    #
+    #
+    #             # the target latitude line is a circle
+    #             # the center is (x0, y0), radius is known
+    #             # by circle formula, we calculate points on the circle and draw it
+    #
+    #             xlen, ylen = self.modis_imtk.width(), self.modis_imtk.height()
+    #
+    #             assert self.modis_imtk.width() == self.cost_imtk.width()
+    #             assert self.modis_imtk.height() == self.cost_imtk.height()
+    #
+    #             for sign in [1, -1]: # lower half circle and upper half circle
+    #                 circle_points = [[]]
+    #                 for x in range(max(int(x0-radius), 0), min(int(x0+radius+1), xlen)):    #range function creates a left-close-right-open interval [,) , thus +1 on right side
+    #                     y = y0 + sign * (radius**2 - (x-x0)**2)**0.5    # circle formula
+    #                     if 0<= y < ylen:
+    #                         circle_points[-1].append((x, y))
+    #                     else:
+    #                         if circle_points[-1] != []:
+    #                             circle_points.append([])
+    #                         else:
+    #                             continue
+    #
+    #                 for points in circle_points:
+    #
+    #                     for i in range(0, len(points)-1):
+    #                         cx, cy = points[i]
+    #                         nx, ny = points[i+1]
+    #                         g1 = self.modis_canvas.create_line(cx, cy, nx, ny, fill='SeaGreen', width=width)
+    #                         self.tag_graticule.append(g1)
+    #                         if self.img_num == 0:
+    #                             g2 = self.cost_canvas.create_line(cx, cy, nx, ny, fill='SeaGreen', width=width)
+    #                             self.cost_tag_graticule.append(g2)
+    #
+    #     # Code for drawing any twisted graticule (old way) are preserved below, too.
+    #
+    #     if polar[0] == None or polar[1] == None:
+    #         # draw latitude lines
+    #         for v in range(50, 90, 1):
+    #             line_points1 = []
+    #             line_points2 = []
+    #             for j in range(0, jlen, 1):
+    #                 lat = lat_mat[:, j]
+    #                 i = int(np.fabs(lat - v).argmin())
+    #                 diff = np.fabs(lat[i] - v)
+    #                 if i > 0 and i < ilen-1  and diff < 0.1:
+    #                     if lon_mat[i][j] <= 0:
+    #                         line_points1.append((i, j, lon_mat[i][j]))
+    #                     else:
+    #                         line_points2.append((i,j,lon_mat[i][j]))
+    #             line_points1=sorted(line_points1,key=lambda line_points1 : line_points1[2])
+    #             line_points2=sorted(line_points2,key=lambda line_points2 : line_points2[2])
+    #
+    #             for i in range(len(line_points1)-1):
+    #                 cx, cy = self.__matrixcoor2canvascoor(line_points1[i][0], line_points1[i][1])
+    #                 nx, ny = self.__matrixcoor2canvascoor(line_points1[i+1][0], line_points1[i+1][1])
+    #                     # g = self.canvas.create_line(cx, cy, nx, ny, fill='yellow', width=1.5)
+    #                 g1 = self.modis_canvas.create_line(cx, cy, nx, ny, fill='SeaGreen', width=width)
+    #                 self.tag_graticule.append(g1)
+    #                 if self.img_num == 0:
+    #                     g2 = self.cost_canvas.create_line(cx, cy, nx, ny, fill='SeaGreen', width=width)
+    #                     self.cost_tag_graticule.append(g2)
+    #                 if i == len(line_points1) - 2:
+    #                     t1 = self.modis_canvas.create_text(nx-2, ny-1, anchor='se', font=("Purisa",fontsize,'bold'), fill='SeaGreen',
+    #                                                 text=str(int(round(lat_mat[line_points1[i+1][0], line_points1[i+1][1]]))))
+    #                     self.tag_graticule.append(t1)
+    #                     if self.img_num == 0:
+    #                         t2 = self.cost_canvas.create_text(nx-2, ny-1, anchor='se', font=("Purisa",fontsize,'bold'), fill='SeaGreen',
+    #                                                 text=str(int(round(lat_mat[line_points1[i+1][0], line_points1[i+1][1]]))))
+    #                         self.cost_tag_graticule.append(t2)
+    #             for i in range(len(line_points2)-1):
+    #                 cx, cy = self.__matrixcoor2canvascoor(line_points2[i][0], line_points2[i][1])
+    #                 nx, ny = self.__matrixcoor2canvascoor(line_points2[i+1][0], line_points2[i+1][1])
+    #                     # g = self.canvas.create_line(cx, cy, nx, ny, fill='yellow', width=1.5)
+    #                 g1 = self.modis_canvas.create_line(cx, cy, nx, ny, fill='SeaGreen', width=width)
+    #                 self.tag_graticule.append(g1)
+    #                 if self.img_num == 0:
+    #                     g2 = self.cost_canvas.create_line(cx, cy, nx, ny, fill='SeaGreen', width=width)
+    #                     self.cost_tag_graticule.append(g2)
+    #                 if i == len(line_points2) - 2:
+    #                     t1 = self.modis_canvas.create_text(nx-2, ny-1, anchor='se', font=("Purisa",fontsize,'bold'), fill='SeaGreen',
+    #                                                 text=str(int(round(lat_mat[line_points2[i+1][0], line_points2[i+1][1]]))))
+    #                     self.tag_graticule.append(t1)
+    #                     if self.img_num == 0:
+    #                         t2 = self.cost_canvas.create_text(nx-2, ny-1, anchor='se', font=("Purisa",fontsize,'bold'), fill='SeaGreen',
+    #                                                 text=str(int(round(lat_mat[line_points2[i+1][0], line_points2[i+1][1]]))))
+    #                         self.cost_tag_graticule.append(t2)
+
     def __draw_graticule(self):
 
         # According to new data, the modis image is transformed by zenithal projection.
@@ -1775,17 +1992,19 @@ class MainWindow(object):
                 if diff < 0.5:
                     j_list.append(int(j))
 
-        if j_list != []: # founded
-            target_j = Counter(j_list).most_common(1)[0][0] # mode of j_list
+        if j_list != []:  # founded
+            target_j = Counter(j_list).most_common(1)[0][0]  # mode of j_list
             x1, y1 = self.__matrixcoor2canvascoor(0, target_j)
-            x2, y2 = self.__matrixcoor2canvascoor(ilen-1, target_j)
+            x2, y2 = self.__matrixcoor2canvascoor(ilen - 1, target_j)
             g1 = self.modis_canvas.create_line(x1, y1, x2, y2, fill='SeaGreen', width=width)
-            t1 = self.modis_canvas.create_text(x2-2, y2-1, anchor='se', font=("Purisa",fontsize), fill='SeaGreen', text=str(int(round(lon_mat[ilen-1, target_j]))))
+            t1 = self.modis_canvas.create_text(x2 - 2, y2 - 1, anchor='se', font=("Purisa", fontsize), fill='SeaGreen',
+                                               text=str(int(round(lon_mat[ilen - 1, target_j]))))
             self.tag_graticule.append(g1)
             self.tag_graticule.append(t1)
             if self.img_num == 0:
                 g2 = self.cost_canvas.create_line(x1, y1, x2, y2, fill='SeaGreen', width=width)
-                t2 = self.cost_canvas.create_text(x2-2, y2-1, anchor='se', font=("Purisa",fontsize), fill='SeaGreen', text=str(int(round(lon_mat[ilen-1, target_j]))))
+                t2 = self.cost_canvas.create_text(x2 - 2, y2 - 1, anchor='se', font=("Purisa", fontsize),
+                                                  fill='SeaGreen', text=str(int(round(lon_mat[ilen - 1, target_j]))))
                 self.cost_tag_graticule.append(g2)
                 self.cost_tag_graticule.append(t2)
 
@@ -1793,7 +2012,7 @@ class MainWindow(object):
 
         # draw other longitude lines, such as 150(-30), 120(-60) etc
         interv = 3
-        for v in range(0+interv, 180, interv):
+        for v in range(0 + interv, 180, interv):
 
             self.modis_canvas.update_idletasks()
             self.cost_canvas.update_idletasks()
@@ -1805,7 +2024,7 @@ class MainWindow(object):
 
             i_list, j_list = [], []
             for j in range(0, jlen, 2):
-                for t in [v, -180+v]:
+                for t in [v, -180 + v]:
                     i = int(np.fabs(lon_mat[:, j] - t).argmin())
                     diff = np.fabs(lon_mat[i, j] - t)
                     if diff < 0.5:
@@ -1816,17 +2035,21 @@ class MainWindow(object):
                 x1, y1 = self.__matrixcoor2canvascoor(i_list[0], j_list[0])
                 x2, y2 = self.__matrixcoor2canvascoor(i_list[-1], j_list[-1])
                 g1 = self.modis_canvas.create_line(x1, y1, x2, y2, fill='SeaGreen', width=width)
-                t1 = self.modis_canvas.create_text(x2-2, y2-1, anchor='se', font=("Purisa",fontsize, 'bold'), fill='SeaGreen', text=str(int(round(lon_mat[i_list[-1], j_list[-1]]))))
+                t1 = self.modis_canvas.create_text(x2 - 2, y2 - 1, anchor='se', font=("Purisa", fontsize, 'bold'),
+                                                   fill='SeaGreen',
+                                                   text=str(int(round(lon_mat[i_list[-1], j_list[-1]]))))
                 self.tag_graticule.append(g1)
                 self.tag_graticule.append(t1)
                 if self.img_num == 0:
                     g2 = self.cost_canvas.create_line(x1, y1, x2, y2, fill='SeaGreen', width=width)
-                    t2 = self.cost_canvas.create_text(x2-2, y2-1, anchor='se', font=("Purisa",fontsize, 'bold'), fill='SeaGreen', text=str(int(round(lon_mat[i_list[-1], j_list[-1]]))))
+                    t2 = self.cost_canvas.create_text(x2 - 2, y2 - 1, anchor='se', font=("Purisa", fontsize, 'bold'),
+                                                      fill='SeaGreen',
+                                                      text=str(int(round(lon_mat[i_list[-1], j_list[-1]]))))
                     self.cost_tag_graticule.append(g2)
                     self.cost_tag_graticule.append(t2)
 
                 if v == 90:
-                    polar[0] = int(i_list[0])   # 90 longitude line is totally horizontal
+                    polar[0] = int(i_list[0])  # 90 longitude line is totally horizontal
 
         if polar[0] != None and polar[1] != None:
             # print polar[0], polar[1]
@@ -1846,18 +2069,17 @@ class MainWindow(object):
 
                 # find a point (i, j) on the circle that lat_mat[i, j] = t
                 i = polar[0]
-                j = int(np.fabs(lat_mat[i, :] - t).argmin())    # first, try to find (i, j) that i equals polar[0]
-                if np.fabs(lat_mat[i, j] - t) > 0.5:            # if not found, try (i, j) that j equals ploar[1]
+                j = int(np.fabs(lat_mat[i, :] - t).argmin())  # first, try to find (i, j) that i equals polar[0]
+                if np.fabs(lat_mat[i, j] - t) > 0.5:  # if not found, try (i, j) that j equals ploar[1]
                     j = polar[1]
                     i = int(np.fabs(lat_mat[:, j] - t).argmin())
                     if np.fabs(lat_mat[i, j] - t) > 0.5:
-                        continue    # also not found , no more work to draw this latitude circle
+                        continue  # also not found , no more work to draw this latitude circle
 
                 # from now on, use canvas coordinates instead of matrix coordinates to improve accuracy
-                x0, y0 = self.__matrixcoor2canvascoor(polar[0], polar[1])   # canvas coordinates of the center
-                x1, y1 = self.__matrixcoor2canvascoor(i, j)                 # canvas coordinates of (i, j)
-                radius = ((x1-x0)**2 + (y1-y0)**2)**0.5
-
+                x0, y0 = self.__matrixcoor2canvascoor(polar[0], polar[1])  # canvas coordinates of the center
+                x1, y1 = self.__matrixcoor2canvascoor(i, j)  # canvas coordinates of (i, j)
+                radius = ((x1 - x0) ** 2 + (y1 - y0) ** 2) ** 0.5
 
                 # the target latitude line is a circle
                 # the center is (x0, y0), radius is known
@@ -1868,11 +2090,12 @@ class MainWindow(object):
                 assert self.modis_imtk.width() == self.cost_imtk.width()
                 assert self.modis_imtk.height() == self.cost_imtk.height()
 
-                for sign in [1, -1]: # lower half circle and upper half circle
+                for sign in [1, -1]:  # lower half circle and upper half circle
                     circle_points = [[]]
-                    for x in range(max(int(x0-radius), 0), min(int(x0+radius+1), xlen)):    #range function creates a left-close-right-open interval [,) , thus +1 on right side
-                        y = y0 + sign * (radius**2 - (x-x0)**2)**0.5    # circle formula
-                        if 0<= y < ylen:
+                    for x in range(max(int(x0 - radius), 0), min(int(x0 + radius + 1),
+                                                                 xlen)):  # range function creates a left-close-right-open interval [,) , thus +1 on right side
+                        y = y0 + sign * (radius ** 2 - (x - x0) ** 2) ** 0.5  # circle formula
+                        if 0 <= y < ylen:
                             circle_points[-1].append((x, y))
                         else:
                             if circle_points[-1] != []:
@@ -1882,9 +2105,9 @@ class MainWindow(object):
 
                     for points in circle_points:
 
-                        for i in range(0, len(points)-1):
+                        for i in range(0, len(points) - 1):
                             cx, cy = points[i]
-                            nx, ny = points[i+1]
+                            nx, ny = points[i + 1]
                             g1 = self.modis_canvas.create_line(cx, cy, nx, ny, fill='SeaGreen', width=width)
                             self.tag_graticule.append(g1)
                             if self.img_num == 0:
@@ -1895,55 +2118,64 @@ class MainWindow(object):
 
         if polar[0] == None or polar[1] == None:
             # draw latitude lines
-            for v in range(50, 90, 1):
+            for v in range(-80, -50, 1):
                 line_points1 = []
                 line_points2 = []
                 for j in range(0, jlen, 1):
                     lat = lat_mat[:, j]
                     i = int(np.fabs(lat - v).argmin())
                     diff = np.fabs(lat[i] - v)
-                    if i > 0 and i < ilen-1  and diff < 0.1:
+                    if i > 0 and i < ilen - 1 and diff < 0.1:
                         if lon_mat[i][j] <= 0:
                             line_points1.append((i, j, lon_mat[i][j]))
                         else:
-                            line_points2.append((i,j,lon_mat[i][j]))
-                line_points1=sorted(line_points1,key=lambda line_points1 : line_points1[2])
-                line_points2=sorted(line_points2,key=lambda line_points2 : line_points2[2])
+                            line_points2.append((i, j, lon_mat[i][j]))
+                line_points1 = sorted(line_points1, key=lambda line_points1: line_points1[2])
+                line_points2 = sorted(line_points2, key=lambda line_points2: line_points2[2])
 
-                for i in range(len(line_points1)-1):
+                for i in range(len(line_points1) - 1):
                     cx, cy = self.__matrixcoor2canvascoor(line_points1[i][0], line_points1[i][1])
-                    nx, ny = self.__matrixcoor2canvascoor(line_points1[i+1][0], line_points1[i+1][1])
-                        # g = self.canvas.create_line(cx, cy, nx, ny, fill='yellow', width=1.5)
+                    nx, ny = self.__matrixcoor2canvascoor(line_points1[i + 1][0], line_points1[i + 1][1])
+                    # g = self.canvas.create_line(cx, cy, nx, ny, fill='yellow', width=1.5)
                     g1 = self.modis_canvas.create_line(cx, cy, nx, ny, fill='SeaGreen', width=width)
                     self.tag_graticule.append(g1)
                     if self.img_num == 0:
                         g2 = self.cost_canvas.create_line(cx, cy, nx, ny, fill='SeaGreen', width=width)
                         self.cost_tag_graticule.append(g2)
                     if i == len(line_points1) - 2:
-                        t1 = self.modis_canvas.create_text(nx-2, ny-1, anchor='se', font=("Purisa",fontsize,'bold'), fill='SeaGreen',
-                                                    text=str(int(round(lat_mat[line_points1[i+1][0], line_points1[i+1][1]]))))
+                        t1 = self.modis_canvas.create_text(nx - 2, ny - 1, anchor='se',
+                                                           font=("Purisa", fontsize, 'bold'), fill='SeaGreen',
+                                                           text=str(int(round(lat_mat[line_points1[i + 1][0],
+                                                                                      line_points1[i + 1][1]]))))
                         self.tag_graticule.append(t1)
                         if self.img_num == 0:
-                            t2 = self.cost_canvas.create_text(nx-2, ny-1, anchor='se', font=("Purisa",fontsize,'bold'), fill='SeaGreen',
-                                                    text=str(int(round(lat_mat[line_points1[i+1][0], line_points1[i+1][1]]))))
+                            t2 = self.cost_canvas.create_text(nx - 2, ny - 1, anchor='se',
+                                                              font=("Purisa", fontsize, 'bold'), fill='SeaGreen',
+                                                              text=str(int(round(lat_mat[line_points1[i + 1][0],
+                                                                                         line_points1[i + 1][1]]))))
                             self.cost_tag_graticule.append(t2)
-                for i in range(len(line_points2)-1):
+                for i in range(len(line_points2) - 1):
                     cx, cy = self.__matrixcoor2canvascoor(line_points2[i][0], line_points2[i][1])
-                    nx, ny = self.__matrixcoor2canvascoor(line_points2[i+1][0], line_points2[i+1][1])
-                        # g = self.canvas.create_line(cx, cy, nx, ny, fill='yellow', width=1.5)
+                    nx, ny = self.__matrixcoor2canvascoor(line_points2[i + 1][0], line_points2[i + 1][1])
+                    # g = self.canvas.create_line(cx, cy, nx, ny, fill='yellow', width=1.5)
                     g1 = self.modis_canvas.create_line(cx, cy, nx, ny, fill='SeaGreen', width=width)
                     self.tag_graticule.append(g1)
                     if self.img_num == 0:
                         g2 = self.cost_canvas.create_line(cx, cy, nx, ny, fill='SeaGreen', width=width)
                         self.cost_tag_graticule.append(g2)
                     if i == len(line_points2) - 2:
-                        t1 = self.modis_canvas.create_text(nx-2, ny-1, anchor='se', font=("Purisa",fontsize,'bold'), fill='SeaGreen',
-                                                    text=str(int(round(lat_mat[line_points2[i+1][0], line_points2[i+1][1]]))))
+                        t1 = self.modis_canvas.create_text(nx - 2, ny - 1, anchor='se',
+                                                           font=("Purisa", fontsize, 'bold'), fill='SeaGreen',
+                                                           text=str(int(round(lat_mat[line_points2[i + 1][0],
+                                                                                      line_points2[i + 1][1]]))))
                         self.tag_graticule.append(t1)
                         if self.img_num == 0:
-                            t2 = self.cost_canvas.create_text(nx-2, ny-1, anchor='se', font=("Purisa",fontsize,'bold'), fill='SeaGreen',
-                                                    text=str(int(round(lat_mat[line_points2[i+1][0], line_points2[i+1][1]]))))
+                            t2 = self.cost_canvas.create_text(nx - 2, ny - 1, anchor='se',
+                                                              font=("Purisa", fontsize, 'bold'), fill='SeaGreen',
+                                                              text=str(int(round(lat_mat[line_points2[i + 1][0],
+                                                                                         line_points2[i + 1][1]]))))
                             self.cost_tag_graticule.append(t2)
+
 
     def __find_geocoordinates(self, longitude, latitude):
 

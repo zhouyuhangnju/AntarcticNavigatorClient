@@ -102,13 +102,13 @@ class ModisMap(object):
                 for i in xrange(i_search_range[0], i_search_range[1]):   # right side +1 ?
                     for j in xrange(j_search_range[0], j_search_range[1]):
                         i2, j2 = i+offset[index][0], j+offset[index][1]
-                        if not np.isnan(self.prob_mat[i, j, 0]):
-                            if not np.isnan(self.prob_mat[i2, j2, 0]):
+                        if not np.isnan(self.prob_mat[i, j, 2]):
+                            if not np.isnan(self.prob_mat[i2, j2, 2]):
                                 p1_index = i*self.w + j
                                 p2_index = i2*self.w + j2
                                 if self.prob_mat[i2, j2, 2] < threshold:     # otherwise, this point is unreachable
                                     cost1 = 0.0
-                                    value = np.mean(np.multiply(self.prob_mat[i2-1:i2+2,j2-1:j2+2,1],np.ones([3,3])))
+                                    value = np.mean(np.multiply(self.prob_mat[i2-1:i2+2,j2-1:j2+2,2],np.ones([3,3])))
                                     if value < ice_thresh:    # normal speed
                                         cost1 = dist[index] / normal_v               # unit of point is 5km
                                     else:
@@ -116,7 +116,7 @@ class ModisMap(object):
                                     edges.append((p1_index, p2_index, cost1))
                                 if self.prob_mat[i, j, 2] < threshold:
                                     cost2 = 0.0
-                                    value = np.mean(np.multiply(self.prob_mat[i-1:i+2,j-1:j+2,1],np.ones([3,3])))
+                                    value = np.mean(np.multiply(self.prob_mat[i-1:i+2,j-1:j+2,2],np.ones([3,3])))
                                     if value < ice_thresh:    # normal speed
                                         cost2 = dist[index] / normal_v
                                     else:
@@ -133,8 +133,8 @@ class ModisMap(object):
                 for i in xrange(i_search_range[0], i_search_range[1]):   # right side +1 ?
                     for j in xrange(j_search_range[0], j_search_range[1]):
                         i2, j2 = i+offset[index][0], j+offset[index][1]
-                        if not np.isnan(self.prob_mat[i, j, 0]):
-                            if not np.isnan(self.prob_mat[i2, j2, 0]):
+                        if not np.isnan(self.prob_mat[i, j, 2]):
+                            if not np.isnan(self.prob_mat[i2, j2, 2]):
                                 p1_index = i*self.w + j
                                 p2_index = i2*self.w + j2
                                 if self.prob_mat[i2, j2, 2] < threshold:     # otherwise, this point is unreachable
