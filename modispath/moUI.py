@@ -119,7 +119,7 @@ class MainWindow(object):
         control_wid = 280
         image_size = 900
         cost_width = 680
-        cost_height = 580
+        cost_height = 1035
         trace_control_h = 64
 
         titleframe = tk.Frame(master, width=basic_w, height=title_h)
@@ -178,42 +178,43 @@ class MainWindow(object):
         # b_prev.grid(row=0, column=2)
         # b_next = tk.Button(frame_cost_down, command=self.__event_canvas_press1, text='->')
         # b_next.grid(row=0, column=3)
-        b_movie1 = tk.Button(frame_cost_down, command=self.__event_canvas_press5, text='背景描述')
-        b_movie1.grid(row=0, column=4, padx=20)
-        b_movie2 = tk.Button(frame_cost_down, command=self.__event_canvas_press6, text='船长评价')
-        b_movie2.grid(row=0, column=5, padx=20)
 
-        trace_file = 'trace.jpg'
-        self.trace_image = Image.open(trace_file)
-        self.trace_imtk = ImageTk.PhotoImage(self.trace_image)
-        trace_canvas = tk.Canvas(frame_trace, width=cost_width, height=basic_h-title_h-cost_height-trace_control_h, bg='grey')
-        trace_canvas.create_image(0, 0, image=self.trace_imtk, anchor='nw')
+        # b_movie1 = tk.Button(frame_cost_down, command=self.__event_canvas_press5, text='背景描述')
+        # b_movie1.grid(row=0, column=4, padx=20)
+        # b_movie2 = tk.Button(frame_cost_down, command=self.__event_canvas_press6, text='船长评价')
+        # b_movie2.grid(row=0, column=5, padx=20)
 
-        xbar = tk.Scrollbar(frame_trace, orient=tk.HORIZONTAL)
-        xbar.config(command=trace_canvas.xview)
-        xbar.pack(side=tk.BOTTOM, fill=tk.X)
-        ybar = tk.Scrollbar(frame_trace)
-        ybar.config(command=trace_canvas.yview)
-        ybar.pack(side=tk.RIGHT, fill=tk.Y)
-        trace_canvas.config(scrollregion=trace_canvas.bbox(tk.ALL))
-        trace_canvas.config(xscrollcommand=xbar.set)
-        trace_canvas.config(yscrollcommand=ybar.set)
-        trace_canvas.pack()
+        # trace_file = 'trace.jpg'
+        # self.trace_image = Image.open(trace_file)
+        # self.trace_imtk = ImageTk.PhotoImage(self.trace_image)
+        # trace_canvas = tk.Canvas(frame_trace, width=cost_width, height=basic_h-title_h-cost_height-trace_control_h, bg='grey')
+        # trace_canvas.create_image(0, 0, image=self.trace_imtk, anchor='nw')
+        #
+        # xbar = tk.Scrollbar(frame_trace, orient=tk.HORIZONTAL)
+        # xbar.config(command=trace_canvas.xview)
+        # xbar.pack(side=tk.BOTTOM, fill=tk.X)
+        # ybar = tk.Scrollbar(frame_trace)
+        # ybar.config(command=trace_canvas.yview)
+        # ybar.pack(side=tk.RIGHT, fill=tk.Y)
+        # trace_canvas.config(scrollregion=trace_canvas.bbox(tk.ALL))
+        # trace_canvas.config(xscrollcommand=xbar.set)
+        # trace_canvas.config(yscrollcommand=ybar.set)
+        # trace_canvas.pack()
 
-        self.trace_canvas = trace_canvas
+        # self.trace_canvas = trace_canvas
 
-        self.trace_canvas.bind("<ButtonPress-1>", self.__event_trace_press)
-        self.trace_canvas.bind("<B1-Motion>", self.__event_trace_move)
-
-        tb1 = tk.Button(frame_trace_zoom, text='-', width=2, command=self.__callback_tb1_zoomout)
-        tb2 = tk.Button(frame_trace_zoom, text='+', width=2, command=self.__callback_tb2_zoomin)
-        tb1.grid(row=0, column=0)
-        tb2.grid(row=0, column=2)
-
-        self.zoom_text_trace = tk.StringVar()
-        self.zoom_text_trace.set('%d' % (self.zoom_factor_trace * 100) + '%')
-        scale_label = tk.Label(frame_trace_zoom, textvariable = self.zoom_text_trace, width=6)
-        scale_label.grid(row=0, column=1)
+        # self.trace_canvas.bind("<ButtonPress-1>", self.__event_trace_press)
+        # self.trace_canvas.bind("<B1-Motion>", self.__event_trace_move)
+        #
+        # tb1 = tk.Button(frame_trace_zoom, text='-', width=2, command=self.__callback_tb1_zoomout)
+        # tb2 = tk.Button(frame_trace_zoom, text='+', width=2, command=self.__callback_tb2_zoomin)
+        # tb1.grid(row=0, column=0)
+        # tb2.grid(row=0, column=2)
+        #
+        # self.zoom_text_trace = tk.StringVar()
+        # self.zoom_text_trace.set('%d' % (self.zoom_factor_trace * 100) + '%')
+        # scale_label = tk.Label(frame_trace_zoom, textvariable = self.zoom_text_trace, width=6)
+        # scale_label.grid(row=0, column=1)
 
         # canvas to show modis image
         self.__init_modis_canvas(frame_modis, image_size)
@@ -361,7 +362,7 @@ class MainWindow(object):
                     i_trace, j_trace = self.__lonlat2matrixcoor_trace(lon, lat)
                     x_trace, y_trace = self.__matrixcoor2canvascoor_trace(i_trace, j_trace)
                     cor_trace = [x_trace-5, y_trace-5, x_trace+5, y_trace+5]
-                    self.trace_tag_operation_point.append(self.trace_canvas.create_oval(cor_trace, fill='yellow'))
+                    # self.trace_tag_operation_point.append(self.trace_canvas.create_oval(cor_trace, fill='yellow'))
 
                 line = self.operation_file.readline()
             self.operation_file.close()
@@ -766,8 +767,8 @@ class MainWindow(object):
             self.img_imtk.append(ImageTk.PhotoImage(pptImage))
         self.img_canvases = self.cost_canvas.create_image(0, 0, image=self.img_imtk[self.img_num], anchor='nw')
 
-        self.trace_canvas.delete("all")
-        self.trace_canvas.create_image(0, 0, image=self.trace_imtk, anchor='nw')
+        # self.trace_canvas.delete("all")
+        # self.trace_canvas.create_image(0, 0, image=self.trace_imtk, anchor='nw')
 
         # for i in range(0, len(self.img_imtk)):
         #     print(self.img_imtk[i])
@@ -803,7 +804,7 @@ class MainWindow(object):
                     i_trace, j_trace = self.__lonlat2matrixcoor_trace(lon, lat)
                     x_trace, y_trace = self.__matrixcoor2canvascoor_trace(i_trace, j_trace)
                     cor_trace = [x_trace-5, y_trace-5, x_trace+5, y_trace+5]
-                    self.trace_tag_operation_point.append(self.trace_canvas.create_oval(cor_trace, fill='yellow'))
+                    # self.trace_tag_operation_point.append(self.trace_canvas.create_oval(cor_trace, fill='yellow'))
 
                 line = self.operation_file.readline()
             self.operation_file.close()
@@ -862,10 +863,10 @@ class MainWindow(object):
                 self.cost_canvas.delete(self.cost_tag_path[i])
             self.cost_tag_path = []
 
-        if self.trace_tag_path != []:
-            for i in xrange(0, len(self.trace_tag_path)):
-                self.trace_canvas.delete(self.trace_tag_path[i])
-            self.trace_tag_path = []
+        # if self.trace_tag_path != []:
+        #     for i in xrange(0, len(self.trace_tag_path)):
+        #         self.trace_canvas.delete(self.trace_tag_path[i])
+        #     self.trace_tag_path = []
 
     def __callback_print_trace(self):
         printname = 'print.jpg'
@@ -961,9 +962,9 @@ class MainWindow(object):
             self.cost_canvas.delete(self.cost_tag_temp_point)
             self.cost_tag_temp_point = None
 
-        if self.trace_tag_temp_point != None:
-            self.trace_canvas.delete(self.trace_tag_temp_point)
-            self.trace_tag_temp_point = None
+        # if self.trace_tag_temp_point != None:
+        #     self.trace_canvas.delete(self.trace_tag_temp_point)
+        #     self.trace_tag_temp_point = None
 
         self.pointFrame = tk.Toplevel()
         self.pointFrame.geometry("300x420")
@@ -1067,18 +1068,18 @@ class MainWindow(object):
         if self.cost_tag_temp_point != None:
             self.cost_canvas.delete(self.cost_tag_temp_point)
             self.cost_tag_temp_point = None
-        if self.trace_tag_temp_point != None:
-            self.trace_canvas.delete(self.trace_tag_temp_point)
-            self.trace_tag_temp_point = None
+        # if self.trace_tag_temp_point != None:
+        #     self.trace_canvas.delete(self.trace_tag_temp_point)
+        #     self.trace_tag_temp_point = None
 
         x, y = self.__matrixcoor2canvascoor(i, j)
         self.tag_operation_point.append(self.modis_canvas.create_oval(x-5, y-5, x+5, y+5, fill='yellow'))
         if self.img_num == 0:
             self.cost_tag_operation_point.append(self.cost_canvas.create_oval(x-5, y-5, x+5, y+5, fill='yellow'))
 
-        i_trace, j_trace = self.__lonlat2matrixcoor_trace(lon, lat)
-        x_trace, y_trace = self.__matrixcoor2canvascoor_trace(i_trace, j_trace)
-        self.trace_tag_operation_point.append(self.trace_canvas.create_oval(x_trace-5, y_trace-5, x_trace+5, y_trace+5, fill='yellow'))
+        # i_trace, j_trace = self.__lonlat2matrixcoor_trace(lon, lat)
+        # x_trace, y_trace = self.__matrixcoor2canvascoor_trace(i_trace, j_trace)
+        # self.trace_tag_operation_point.append(self.trace_canvas.create_oval(x_trace-5, y_trace-5, x_trace+5, y_trace+5, fill='yellow'))
 
         self.__auto_scrollbar_move()
 
@@ -1100,9 +1101,9 @@ class MainWindow(object):
         if self.cost_tag_temp_point != None:
             self.cost_canvas.delete(self.cost_tag_temp_point)
             self.cost_tag_temp_point = None
-        if self.trace_tag_temp_point != None:
-            self.trace_canvas.delete(self.trace_tag_temp_point)
-            self.trace_tag_temp_point = None
+        # if self.trace_tag_temp_point != None:
+        #     self.trace_canvas.delete(self.trace_tag_temp_point)
+        #     self.trace_tag_temp_point = None
 
         self.recent_op_points.remove((lon, lat))
         self.list.delete(index)
@@ -1253,17 +1254,17 @@ class MainWindow(object):
             if self.cost_tag_temp_point != None:
                 self.cost_canvas.delete(self.cost_tag_temp_point)
                 self.cost_tag_temp_point = None
-            if self.trace_tag_temp_point != None:
-                self.trace_canvas.delete(self.trace_tag_temp_point)
-                self.trace_tag_temp_point = None
+            # if self.trace_tag_temp_point != None:
+            #     self.trace_canvas.delete(self.trace_tag_temp_point)
+            #     self.trace_tag_temp_point = None
 
             self.tag_operation_point.append(self.modis_canvas.create_oval(x-5, y-5, x+5, y+5, fill='yellow'))
             if self.img_num == 0:
                 self.cost_tag_operation_point.append(self.cost_canvas.create_oval(x-5, y-5, x+5, y+5, fill='yellow'))
 
-            i_trace, j_trace = self.__lonlat2matrixcoor_trace(lon, lat)
-            x_trace, y_trace = self.__matrixcoor2canvascoor_trace(i_trace, j_trace)
-            self.trace_tag_operation_point.append(self.trace_canvas.create_oval(x_trace-5, y_trace-5, x_trace+5, y_trace+5, fill='yellow'))
+            # i_trace, j_trace = self.__lonlat2matrixcoor_trace(lon, lat)
+            # x_trace, y_trace = self.__matrixcoor2canvascoor_trace(i_trace, j_trace)
+            # self.trace_tag_operation_point.append(self.trace_canvas.create_oval(x_trace-5, y_trace-5, x_trace+5, y_trace+5, fill='yellow'))
 
             self.mouse_status.set(0)
 
@@ -1328,12 +1329,12 @@ class MainWindow(object):
 
         self.message_var.set(text_cotent)
 
-    def __event_trace_press(self, event):
-        self.trace_canvas.scan_mark(event.x, event.y)
-
-    def __event_trace_move(self, event):
-        # print(event.x, event.y)
-        self.trace_canvas.scan_dragto(event.x, event.y, gain=1)
+    # def __event_trace_press(self, event):
+    #     self.trace_canvas.scan_mark(event.x, event.y)
+    #
+    # def __event_trace_move(self, event):
+    #     # print(event.x, event.y)
+    #     self.trace_canvas.scan_dragto(event.x, event.y, gain=1)
 
     def __event_entry_input(self, event):
 
@@ -1526,9 +1527,9 @@ class MainWindow(object):
             self.cost_canvas.delete(self.cost_tag_start_point)
             self.cost_tag_start_point = None
 
-        if self.trace_tag_start_point != None:
-            self.trace_canvas.delete(self.trace_tag_start_point)
-            self.trace_tag_start_point = None
+        # if self.trace_tag_start_point != None:
+        #     self.trace_canvas.delete(self.trace_tag_start_point)
+        #     self.trace_tag_start_point = None
 
         if self.e1.get() == '' or self.e2.get() == '':  #todo
             return
@@ -1546,7 +1547,7 @@ class MainWindow(object):
         i_trace, j_trace = self.__lonlat2matrixcoor_trace(lon, lat)
         x_trace, y_trace = self.__matrixcoor2canvascoor_trace(i_trace, j_trace)
 
-        self.trace_tag_start_point = self.trace_canvas.create_oval(x_trace-5, y_trace-5, x_trace+5, y_trace+5, fill='red')
+        # self.trace_tag_start_point = self.trace_canvas.create_oval(x_trace-5, y_trace-5, x_trace+5, y_trace+5, fill='red')
 
     def __draw_end_point(self):
 
@@ -1558,9 +1559,9 @@ class MainWindow(object):
             self.cost_canvas.delete(self.cost_tag_end_point)
             self.cost_tag_end_point = None
 
-        if self.trace_tag_end_point != None:
-            self.trace_canvas.delete(self.trace_tag_end_point)
-            self.trace_tag_end_point = None
+        # if self.trace_tag_end_point != None:
+        #     self.trace_canvas.delete(self.trace_tag_end_point)
+        #     self.trace_tag_end_point = None
 
         if self.e3.get() == '' or self.e4.get() == '':  #todo
             return
@@ -1575,10 +1576,10 @@ class MainWindow(object):
         if self.img_num == 0:
             self.cost_tag_end_point = self.cost_canvas.create_oval(x-5, y-5, x+5, y+5, fill='blue')
 
-        i_trace, j_trace = self.__lonlat2matrixcoor_trace(lon, lat)
-        x_trace, y_trace = self.__matrixcoor2canvascoor_trace(i_trace, j_trace)
+        # i_trace, j_trace = self.__lonlat2matrixcoor_trace(lon, lat)
+        # x_trace, y_trace = self.__matrixcoor2canvascoor_trace(i_trace, j_trace)
 
-        self.trace_tag_end_point = self.trace_canvas.create_oval(x_trace-5, y_trace-5, x_trace+5, y_trace+5, fill='blue')
+        # self.trace_tag_end_point = self.trace_canvas.create_oval(x_trace-5, y_trace-5, x_trace+5, y_trace+5, fill='blue')
 
     def __draw_temp_point(self):
         if self.tag_temp_point != None:
@@ -1589,9 +1590,9 @@ class MainWindow(object):
             self.cost_canvas.delete(self.cost_tag_temp_point)
             self.cost_tag_temp_point = None
 
-        if self.trace_tag_temp_point != None:
-            self.trace_canvas.delete(self.trace_tag_temp_point)
-            self.trace_tag_temp_point = None
+        # if self.trace_tag_temp_point != None:
+        #     self.trace_canvas.delete(self.trace_tag_temp_point)
+        #     self.trace_tag_temp_point = None
 
         try:
             if self.entry_lon.get() == '' or self.entry_lat.get() == '':  #todo
@@ -1607,10 +1608,10 @@ class MainWindow(object):
             if self.img_num == 0:
                 self.cost_tag_temp_point = self.cost_canvas.create_oval(x-5, y-5, x+5, y+5, fill='green')
 
-            i_trace, j_trace = self.__lonlat2matrixcoor_trace(lon, lat)
-            x_trace, y_trace = self.__matrixcoor2canvascoor_trace(i_trace, j_trace)
+            # i_trace, j_trace = self.__lonlat2matrixcoor_trace(lon, lat)
+            # x_trace, y_trace = self.__matrixcoor2canvascoor_trace(i_trace, j_trace)
 
-            self.trace_tag_temp_point = self.trace_canvas.create_oval(x_trace-5, y_trace-5, x_trace+5, y_trace+5, fill='green')
+            # self.trace_tag_temp_point = self.trace_canvas.create_oval(x_trace-5, y_trace-5, x_trace+5, y_trace+5, fill='green')
         except:
             return
 
@@ -1625,10 +1626,10 @@ class MainWindow(object):
                 self.cost_canvas.delete(self.cost_tag_operation_point[i])
             self.cost_tag_operation_point = []
 
-        if self.trace_tag_operation_point != []:
-            for i in xrange(0, len(self.trace_tag_operation_point)):
-                self.trace_canvas.delete(self.trace_tag_operation_point[i])
-            self.trace_tag_operation_point = []
+        # if self.trace_tag_operation_point != []:
+        #     for i in xrange(0, len(self.trace_tag_operation_point)):
+        #         self.trace_canvas.delete(self.trace_tag_operation_point[i])
+        #     self.trace_tag_operation_point = []
 
         for item in self.current_op_points:
             lon, lat = item
@@ -1639,10 +1640,10 @@ class MainWindow(object):
             self.tag_operation_point.append(self.modis_canvas.create_oval(x-5, y-5, x+5, y+5, fill='yellow'))
             if self.img_num == 0:
                 self.cost_tag_operation_point.append(self.cost_canvas.create_oval(x-5, y-5, x+5, y+5, fill='yellow'))
-
-            i_trace, j_trace = self.__lonlat2matrixcoor_trace(lon, lat)
-            x_trace, y_trace = self.__matrixcoor2canvascoor_trace(i_trace, j_trace)
-            self.trace_tag_operation_point.append(self.trace_canvas.create_oval(x_trace-5, y_trace-5, x_trace+5, y_trace+5, fill='yellow'))
+            #
+            # i_trace, j_trace = self.__lonlat2matrixcoor_trace(lon, lat)
+            # x_trace, y_trace = self.__matrixcoor2canvascoor_trace(i_trace, j_trace)
+            # self.trace_tag_operation_point.append(self.trace_canvas.create_oval(x_trace-5, y_trace-5, x_trace+5, y_trace+5, fill='yellow'))
 
     def __draw_left_point(self):
         if self.tag_left_point != None:
@@ -1701,10 +1702,10 @@ class MainWindow(object):
                 self.cost_canvas.delete(self.cost_tag_path[i])
             self.cost_tag_path = []
 
-        if self.trace_tag_path != []:
-            for i in xrange(0, len(self.trace_tag_path)):
-                self.trace_canvas.delete(self.trace_tag_path[i])
-            self.trace_tag_path = []
+        # if self.trace_tag_path != []:
+        #     for i in xrange(0, len(self.trace_tag_path)):
+        #         self.trace_canvas.delete(self.trace_tag_path[i])
+        #     self.trace_tag_path = []
 
         if self.path == []:
             return
@@ -1730,7 +1731,7 @@ class MainWindow(object):
             [nlon_trace, nlat_trace] = self.lonlat_mat[self.path[i+1][0], self.path[i+1][1]]
             ni_trace, nj_trace = self.__lonlat2matrixcoor_trace(nlon_trace, nlat_trace)
             nx_trace, ny_trace = self.__matrixcoor2canvascoor_trace(ni_trace, nj_trace)
-            self.trace_tag_path.append(self.trace_canvas.create_line(cx_trace, cy_trace, nx_trace, ny_trace, fill='#7FFF00', width=width_trace))
+            # self.trace_tag_path.append(self.trace_canvas.create_line(cx_trace, cy_trace, nx_trace, ny_trace, fill='#7FFF00', width=width_trace))
 
     # def __draw_graticule(self):
     #
@@ -2297,47 +2298,47 @@ class MainWindow(object):
             self.cost_canvas.xview_moveto(nxa_c)
             self.cost_canvas.yview_moveto(nya_c)
 
-    def __rescale_trace(self, new_factor):
-
-        assert new_factor in self.zoom_level_trace
-
-        # save scrollbar position before rescaling
-        xa, xb = self.trace_canvas.xview()
-        ya, yb = self.trace_canvas.yview()
-
-        # do rescaling works
-        self.zoom_factor_trace = new_factor
-        self.zoom_text_trace.set('%d' % (new_factor * 100) + '%')
-
-        img = self.trace_image
-
-        new_size = (int(img.size[0] * new_factor), int(img.size[1] * new_factor))
-        self.trace_imtk = ImageTk.PhotoImage(img.resize(new_size))          # img is not resized
-        self.trace_canvas.create_image(0, 0, image=self.trace_imtk, anchor='nw')
-        self.trace_canvas.config(scrollregion=(0, 0, new_size[0], new_size[1]))
-
-        self.__draw_start_point()
-        self.__draw_end_point()
-        self.__draw_path()
-        self.__draw_temp_point()
-
-        if self.trace_tag_operation_point != []:
-            self.__draw_operation_point()
-        # fix wrong position of scrollbar after rescaling
-
-        xm, ym = 0.0, 0.0   # x middle, y middle
-        xm = (xa + xb)/2.0
-        ym = (ya + yb)/2.0
-
-        nxlen = float(self.trace_canvas['width']) / new_size[0]       # new xbar len
-        nylen = float(self.trace_canvas['height']) / new_size[1]
-        nxa = (xm - nxlen/2.0)                                  # new xa
-        nya = (ym - nylen/2.0)
-
-        self.trace_canvas.xview_moveto(nxa)
-        self.trace_canvas.yview_moveto(nya)
-
-        self.__auto_scrollbar_move()
+    # def __rescale_trace(self, new_factor):
+    #
+    #     assert new_factor in self.zoom_level_trace
+    #
+    #     # save scrollbar position before rescaling
+    #     # xa, xb = self.trace_canvas.xview()
+    #     # ya, yb = self.trace_canvas.yview()
+    #
+    #     # do rescaling works
+    #     self.zoom_factor_trace = new_factor
+    #     self.zoom_text_trace.set('%d' % (new_factor * 100) + '%')
+    #
+    #     img = self.trace_image
+    #
+    #     new_size = (int(img.size[0] * new_factor), int(img.size[1] * new_factor))
+    #     self.trace_imtk = ImageTk.PhotoImage(img.resize(new_size))          # img is not resized
+    #     self.trace_canvas.create_image(0, 0, image=self.trace_imtk, anchor='nw')
+    #     self.trace_canvas.config(scrollregion=(0, 0, new_size[0], new_size[1]))
+    #
+    #     self.__draw_start_point()
+    #     self.__draw_end_point()
+    #     self.__draw_path()
+    #     self.__draw_temp_point()
+    #
+    #     if self.trace_tag_operation_point != []:
+    #         self.__draw_operation_point()
+    #     # fix wrong position of scrollbar after rescaling
+    #
+    #     xm, ym = 0.0, 0.0   # x middle, y middle
+    #     xm = (xa + xb)/2.0
+    #     ym = (ya + yb)/2.0
+    #
+    #     nxlen = float(self.trace_canvas['width']) / new_size[0]       # new xbar len
+    #     nylen = float(self.trace_canvas['height']) / new_size[1]
+    #     nxa = (xm - nxlen/2.0)                                  # new xa
+    #     nya = (ym - nylen/2.0)
+    #
+    #     self.trace_canvas.xview_moveto(nxa)
+    #     self.trace_canvas.yview_moveto(nya)
+    #
+    #     self.__auto_scrollbar_move()
 
     def __auto_scrollbar_move(self):
 
@@ -2351,10 +2352,10 @@ class MainWindow(object):
             self.cost_canvas.yview_moveto((centery - float(self.cost_canvas['height'])/2)/self.cost_imtk.height())
 
         centerlon, centerlat = self.lonlat_mat[centeri, centerj, 0], self.lonlat_mat[centeri, centerj, 1]
-        centeri_trace, centerj_trace = self.__lonlat2matrixcoor_trace(centerlon, centerlat)
-        centerx_trace, centery_trace = self.__matrixcoor2canvascoor_trace(centeri_trace, centerj_trace)
-        self.trace_canvas.xview_moveto((centerx_trace - float(self.trace_canvas['width'])/2)/self.trace_imtk.width())
-        self.trace_canvas.yview_moveto((centery_trace - float(self.trace_canvas['height'])/2)/self.trace_imtk.height())
+        # centeri_trace, centerj_trace = self.__lonlat2matrixcoor_trace(centerlon, centerlat)
+        # centerx_trace, centery_trace = self.__matrixcoor2canvascoor_trace(centeri_trace, centerj_trace)
+        # self.trace_canvas.xview_moveto((centerx_trace - float(self.trace_canvas['width'])/2)/self.trace_imtk.width())
+        # self.trace_canvas.yview_moveto((centery_trace - float(self.trace_canvas['height'])/2)/self.trace_imtk.height())
 
     def __get_new_center(self):
 
