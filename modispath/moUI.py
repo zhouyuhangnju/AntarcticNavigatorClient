@@ -285,8 +285,8 @@ class MainWindow(object):
         b_print = tk.Button(frame_control, command=self.__callback_print_trace, text='打印路径')
         b_print.grid(row=10, column=0, columnspan=2, pady=10)
 
-        b_sa = tk.Button(frame_control, command=self.__callback_sar_send, text='请求SAR图')
-        b_sa.grid(row=11, column=0, columnspan=2, pady=10)
+        # b_sa = tk.Button(frame_control, command=self.__callback_sar_send, text='请求SAR图')
+        # b_sa.grid(row=11, column=0, columnspan=2, pady=10)
 
         b_re = tk.Button(frame_control, command=self.__update_files, text='更新')
         b_re.grid(row=12, column=0, columnspan=2, pady=10)
@@ -1187,13 +1187,13 @@ class MainWindow(object):
         else:
             pos_text2 = pos_text2 + "W)"
 
-        text = '请求SAR图，所需要覆盖面积为' + pos_text1 + '到' + pos_text2
-
-        sent = send_mail.send(self.entry_mail.get(), text)
-        if sent:
-            tkMessageBox.showinfo('Info', '邮件发送成功')
-        else:
-            tkMessageBox.showerror('Error', '邮件发送失败')
+        # text = '请求SAR图，所需要覆盖面积为' + pos_text1 + '到' + pos_text2
+        #
+        # sent = send_mail.send(self.entry_mail.get(), text)
+        # if sent:
+        #     tkMessageBox.showinfo('Info', '邮件发送成功')
+        # else:
+        #     tkMessageBox.showerror('Error', '邮件发送失败')
         self.sarFrame.destroy()
 
     def __close_point_frame(self):
