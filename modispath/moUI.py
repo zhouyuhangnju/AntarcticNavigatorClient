@@ -119,7 +119,8 @@ class MainWindow(object):
         control_wid = 280
         image_size = 900
         cost_width = 680
-        cost_height = 1035
+        # cost_height = 1035
+        cost_height = 1030
         trace_control_h = 64
 
         titleframe = tk.Frame(master, width=basic_w, height=title_h)
@@ -158,12 +159,12 @@ class MainWindow(object):
         frame_info.grid(row=1, column=0, padx=2, pady=2)
 
         frame_cost = tk.Frame(frame3, width=cost_width, height=cost_height)
-        frame_trace = tk.Frame(frame3, width=cost_width, height=basic_h-title_h-cost_height-trace_control_h)
-        frame_trace_zoom = tk.Frame(frame3, width=cost_width, height=trace_control_h)
+        # frame_trace = tk.Frame(frame3, width=cost_width, height=basic_h-title_h-cost_height-trace_control_h)
+        # frame_trace_zoom = tk.Frame(frame3, width=cost_width, height=trace_control_h)
 
         frame_cost.grid(row=0, column=0, padx=2, pady=5)
-        frame_trace.grid(row=1, column=0, padx=2, pady=2)
-        frame_trace_zoom.grid(row=2, column=0, padx=2, pady=2, sticky=tk.E)
+        # frame_trace.grid(row=1, column=0, padx=2, pady=2)
+        # frame_trace_zoom.grid(row=2, column=0, padx=2, pady=2, sticky=tk.E)
 
         frame_cost_up = tk.Frame(frame_cost, width=cost_width, height=cost_height-trace_control_h)
         frame_cost_up.grid(row=0, column=0)
@@ -437,7 +438,7 @@ class MainWindow(object):
         imtk = None
         imtk = ImageTk.PhotoImage(self.modisimg)
         self.modis_imtk = imtk
-        canvas = tk.Canvas(frame, width=size, height=size, bg='grey')
+        canvas = tk.Canvas(frame, width=680, height=size, bg='grey')
         canvas.create_image(0, 0, image=imtk, anchor='nw')
 
         xbar = tk.Scrollbar(frame, orient=tk.HORIZONTAL)
@@ -474,7 +475,7 @@ class MainWindow(object):
         # for i in range(0, len(self.img_imtk)):
         #     print(self.img_imtk[i])
 
-        canvas = tk.Canvas(frame, width=size+100, height=size-trace_control_h-65, bg='grey')
+        canvas = tk.Canvas(frame, width=680, height=size-trace_control_h-65, bg='grey')
         self.img_canvases = canvas.create_image(0, 0, image=self.img_imtk[self.img_num], anchor='nw')
 
         xbar = tk.Scrollbar(frame, orient=tk.HORIZONTAL)
